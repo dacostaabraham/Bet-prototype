@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0C0C16">
+<title>10BET — Jackpot Simplifié</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;background:#0C0C16;overflow:hidden;}
+#root{height:100%;display:flex;align-items:center;justify-content:center;}
+
+/* ── On mobile : full screen ── */
+@media(max-width:500px){
+  #ph{width:100vw!important;height:100dvh!important;border-radius:0!important;border:none!important;}
+  .phone-wrap{padding:0!important;background:transparent!important;}
+  #root{align-items:flex-start;}
+}
+.phone-wrap{background:#1A1A2A;border-radius:28px;padding:16px;display:flex;}
+
+/* ── Phone shell ── */
+#ph{width:390px;height:844px;background:#0C0C16;border-radius:44px;border:2px solid #252535;overflow:hidden;position:relative;font-family:'Barlow',-apple-system,sans-serif;color:#F0F0F8;-webkit-font-smoothing:antialiased;flex-shrink:0;}
+.scr{position:absolute;top:0;left:0;right:0;bottom:0;overflow-y:auto;overflow-x:hidden;background:#0C0C16;display:none;}
+.scr.on{display:block;}
+.scr::-webkit-scrollbar{display:none;}
+
+/* ── Status bar ── */
+.sbar{height:44px;display:flex;justify-content:space-between;align-items:center;padding:10px 20px 0;position:sticky;top:0;background:#0C0C16;z-index:20;}
+
+/* ── Bottom nav ── */
+.bnav{position:absolute;bottom:0;left:0;right:0;height:72px;background:#0C0C16;border-top:1px solid #1E1E2E;display:flex;z-index:50;padding:8px 0 16px;}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px 0;}
+.ni svg{width:20px;height:20px;fill:#6B6B80;transition:fill .2s;}
+.ni-lbl{font-size:9px;font-family:'Exo 2',sans-serif;font-weight:600;color:#6B6B80;letter-spacing:.4px;transition:color .2s;}
+.ni.ac svg{fill:#F5A623;}
+.ni.ac .ni-lbl{color:#F5A623;}
+
+/* ── Typography ── */
+.exo{font-family:'Exo 2',sans-serif;font-weight:900;}
+.exo7{font-family:'Exo 2',sans-serif;font-weight:700;}
+
+/* ── Buttons ── */
+.btn{display:block;width:100%;padding:15px;border:none;border-radius:12px;cursor:pointer;font-family:'Exo 2',sans-serif;font-weight:800;font-size:13px;letter-spacing:.4px;transition:transform .15s;user-select:none;text-align:center;}
+.btn:active{transform:scale(.97);}
+.btn-g{background:linear-gradient(135deg,#00D46A,#00A850);color:#000;}
+.btn-o{background:linear-gradient(135deg,#F5A623,#E8860A);color:#000;}
+.btn-ghost{background:#13131F;color:#F0F0F8;border:1px solid #252535;}
+
+/* ── Cards ── */
+.card{background:#13131F;border-radius:14px;border:1px solid #1E1E2E;padding:14px;}
+
+/* ── Outcome buttons ── */
+.ob{flex:1;padding:8px 4px;border-radius:8px;border:1.5px solid #252535;background:#1A1A2A;color:#6B6B80;font-family:'Exo 2',sans-serif;font-weight:700;font-size:11px;cursor:pointer;transition:all .15s;letter-spacing:.3px;text-align:center;}
+.ob:active{transform:scale(.95);}
+.ob.dom.sel{background:rgba(0,212,106,.15);border-color:#00D46A;color:#00D46A;}
+.ob.nul.sel{background:rgba(245,166,35,.15);border-color:#F5A623;color:#F5A623;}
+.ob.ext.sel{background:rgba(129,140,248,.15);border-color:#818CF8;color:#818CF8;}
+
+/* ── Stake rows ── */
+.stk{background:#13131F;border:1.5px solid #1E1E2E;border-radius:14px;padding:14px 12px;cursor:pointer;transition:all .2s;margin-bottom:8px;}
+.stk.sel{border-color:#F5A623;background:rgba(245,166,35,.07);}
+.stk:active{transform:scale(.98);}
+
+/* ── Badges ── */
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:10px;font-family:'Exo 2',sans-serif;font-weight:700;letter-spacing:.5px;text-transform:uppercase;}
+.bw{background:rgba(0,212,106,.12);color:#00D46A;border:1px solid rgba(0,212,106,.3);}
+.bl{background:rgba(239,68,68,.12);color:#EF4444;border:1px solid rgba(239,68,68,.3);}
+.bp{background:rgba(245,166,35,.12);color:#F5A623;border:1px solid rgba(245,166,35,.3);}
+
+/* ── Inputs ── */
+.inp{width:100%;background:#13131F;border:1.5px solid #252535;border-radius:12px;padding:14px 16px;color:#F0F0F8;font-family:'Barlow',sans-serif;font-size:16px;outline:none;transition:border-color .2s;box-sizing:border-box;}
+.inp:focus{border-color:#F5A623;}
+.otp-inp{width:48px;height:58px;background:#13131F;border:1.5px solid #252535;border-radius:12px;color:#F0F0F8;font-family:'Exo 2',sans-serif;font-size:22px;font-weight:700;text-align:center;outline:none;transition:border-color .2s;}
+.otp-inp:focus{border-color:#F5A623;}
+
+/* ── Deposit method ── */
+.dm{background:#13131F;border:1.5px solid #1E1E2E;border-radius:14px;padding:13px 16px;cursor:pointer;display:flex;align-items:center;gap:12px;transition:all .2s;margin-bottom:10px;}
+.dm.sel{border-color:#F5A623;background:rgba(245,166,35,.05);}
+.dm:active{transform:scale(.98);}
+
+/* ── Progress dots ── */
+.dot{width:8px;height:8px;border-radius:50%;background:#1E1E2E;transition:all .2s;display:inline-block;margin:0 2px;}
+.dot.f{background:#00D46A;box-shadow:0 0 5px rgba(0,212,106,.5);}
+
+/* ── Ticker ── */
+.ticker-track{background:#F5A623;overflow:hidden;white-space:nowrap;padding:5px 0;}
+.ticker-inner{display:inline-block;animation:ticker-scroll 22s linear infinite;font-family:'Exo 2',sans-serif;font-weight:700;font-size:10px;color:#000;letter-spacing:.5px;}
+
+/* ── Confirm bar ── */
+.cbar{position:sticky;bottom:72px;background:rgba(12,12,22,.97);border-top:1px solid #1E1E2E;padding:12px 16px;z-index:30;backdrop-filter:blur(8px);}
+
+/* ── Tab buttons ── */
+.tab-btn{flex:1;padding:8px 4px;border-radius:10px;border:1.5px solid #1E1E2E;background:#13131F;color:#6B6B80;font-family:'Exo 2',sans-serif;font-weight:700;font-size:10px;cursor:pointer;transition:all .2s;}
+.tab-btn.ac{border-color:#F5A623;background:rgba(245,166,35,.1);color:#F5A623;}
+
+/* ── Notification ── */
+.notif{position:absolute;top:54px;left:14px;right:14px;background:#13131F;border:1.5px solid #00D46A;border-radius:12px;padding:12px 14px;z-index:100;display:flex;align-items:center;gap:10px;animation:slideDown .3s ease;}
+
+/* ── Menu items ── */
+.menu-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:#13131F;border:1px solid #1E1E2E;border-radius:12px;margin-bottom:6px;cursor:pointer;transition:background .2s;}
+.menu-item:active{background:#1A1A2A;}
+
+/* ── Animations ── */
+@keyframes slideDown{from{opacity:0;transform:translateY(-10px);}to{opacity:1;transform:translateY(0);}}
+@keyframes scaleIn{from{transform:scale(0.5);opacity:0;}to{transform:scale(1);opacity:1;}}
+@keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+@keyframes ticker-scroll{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+@keyframes pulseGlow{0%,100%{opacity:1;}50%{opacity:.55;}}
+.scale-in{animation:scaleIn .45s cubic-bezier(.34,1.56,.64,1) forwards;}
+.spinning{animation:spin 1s linear infinite;}
+.pulsing{animation:pulseGlow 2s ease infinite;}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+/* ── DATA ── */
+const MATCHES = [
+  {id:1,h:"PSG",a:"Bayern Munich",lg:"Champions League",t:"19:00"},
+  {id:2,h:"Man City",a:"Real Madrid",lg:"Champions League",t:"21:00"},
+  {id:3,h:"Barcelona",a:"Inter Milan",lg:"Champions League",t:"19:00"},
+  {id:4,h:"Liverpool",a:"Dortmund",lg:"Champions League",t:"21:00"},
+  {id:5,h:"Atletico",a:"Porto",lg:"Champions League",t:"21:00"},
+  {id:6,h:"Arsenal",a:"Napoli",lg:"Europa League",t:"18:45"},
+  {id:7,h:"Roma",a:"Ajax",lg:"Europa League",t:"21:00"},
+  {id:8,h:"Juventus",a:"Benfica",lg:"Champions League",t:"21:00"},
+  {id:9,h:"Chelsea",a:"Shakhtar",lg:"Champions League",t:"19:00"},
+  {id:10,h:"AC Milan",a:"PSV",lg:"Champions League",t:"19:00"},
+  {id:11,h:"Leverkusen",a:"Celtic",lg:"Champions League",t:"21:00"},
+  {id:12,h:"Séville",a:"Man United",lg:"Europa League",t:"18:45"},
+];
+const STAKES = [
+  {a:100,g:15000,m:150},{a:200,g:25000,m:125},{a:500,g:50000,m:100},
+  {a:1000,g:85000,m:85},{a:2000,g:150000,m:75},{a:5000,g:300000,m:60},{a:10000,g:500000,m:50},
+];
+const INIT_TICKETS = [
+  {id:"TK-2025-001",date:"14 Mar 2025",stake:500,gain:50000,status:"won",progress:10},
+  {id:"TK-2025-002",date:"15 Mar 2025",stake:1000,gain:85000,status:"lost",progress:10},
+  {id:"TK-2025-003",date:"16 Mar 2025",stake:200,gain:25000,status:"pending",progress:7},
+];
+
+const fmt = n => n.toLocaleString("fr-FR");
+
+/* ── LOGO ── */
+function Logo({size=22}){
+  return(
+    <span className="exo" style={{fontSize:size,letterSpacing:"-.5px",lineHeight:1}}>
+      <span style={{color:"#F5A623"}}>10</span>
+      <span style={{color:"#F5A623",fontSize:size*.55,verticalAlign:"top"}}>★</span>
+      <span style={{color:"#F0F0F8"}}>BET</span>
+    </span>
+  );
+}
+
+/* ── STATUS BAR ── */
+function StatusBar({balance}){
+  return(
+    <div className="sbar">
+      <span className="exo7" style={{fontSize:13}}>9:41</span>
+      <Logo size={18}/>
+      <div style={{display:"flex",alignItems:"baseline",gap:4,fontSize:12}}>
+        <span className="exo7">{fmt(balance)}</span>
+        <span style={{color:"#6B6B80",fontSize:10}}>FCFA</span>
+      </div>
+    </div>
+  );
+}
+
+/* ── BOTTOM NAV ── */
+function BottomNav({screen,onNav}){
+  const items=[
+    {id:"home",label:"Accueil",d:"M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"},
+    {id:"paris",label:"Mes Paris",d:"M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"},
+    {id:"depot",label:"Dépôt",d:"M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"},
+    {id:"compte",label:"Compte",d:"M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"},
+  ];
+  const active=["mise","success"].includes(screen)?"home":screen;
+  return(
+    <div className="bnav">
+      {items.map(n=>(
+        <div key={n.id} className={`ni ${active===n.id?"ac":""}`} onClick={()=>onNav(n.id)}>
+          <svg viewBox="0 0 24 24"><path d={n.d}/></svg>
+          <span className="ni-lbl">{n.label}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ── SPLASH ── */
+function SplashScreen(){
+  return(
+    <div className="scr on" style={{display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column"}}>
+      <div style={{textAlign:"center"}}>
+        <div style={{width:96,height:96,borderRadius:24,background:"#1A1A2A",border:"2px solid #F5A623",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 20px"}}>
+          <span className="exo" style={{fontSize:38,color:"#F5A623"}}>10</span>
+        </div>
+        <Logo size={42}/>
+        <div className="exo7" style={{fontSize:11,color:"#6B6B80",letterSpacing:2.5,textTransform:"uppercase",marginTop:8,marginBottom:52}}>JACKPOT SIMPLIFIÉ</div>
+        <svg width="32" height="32" viewBox="0 0 32 32" className="spinning">
+          <circle cx="16" cy="16" r="13" stroke="#252535" strokeWidth="3" fill="none"/>
+          <path d="M 16 3 A 13 13 0 0 1 29 16" stroke="#F5A623" strokeWidth="3" strokeLinecap="round" fill="none"/>
+        </svg>
+      </div>
+    </div>
+  );
+}
+
+/* ── LOGIN ── */
+function LoginScreen({phone,setPhone,onSendOtp}){
+  const ok=phone.length>=8;
+  return(
+    <div className="scr on">
+      <div style={{height:170,background:"#0F0F1A",display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:8}}>
+        <Logo size={38}/>
+        <div className="exo7" style={{fontSize:10,color:"#6B6B80",letterSpacing:2.5,textTransform:"uppercase"}}>JACKPOT SIMPLIFIÉ</div>
+      </div>
+      <div style={{padding:24}}>
+        <div style={{marginBottom:24}}>
+          <div className="exo" style={{fontSize:22,marginBottom:6}}>Bienvenue 👋</div>
+          <div style={{fontSize:14,color:"#6B6B80"}}>Entrez votre numéro pour commencer</div>
+        </div>
+        <div style={{marginBottom:16}}>
+          <div className="exo7" style={{fontSize:11,color:"#6B6B80",letterSpacing:1,marginBottom:8}}>NUMÉRO DE TÉLÉPHONE</div>
+          <div style={{display:"flex",gap:8}}>
+            <div style={{background:"#13131F",border:"1.5px solid #252535",borderRadius:12,padding:"14px 12px",fontSize:13,fontFamily:"'Exo 2',sans-serif",fontWeight:700,color:"#F5A623",whiteSpace:"nowrap"}}>🇨🇮 +225</div>
+            <input className="inp" type="tel" placeholder="07 XX XX XX XX" value={phone} onChange={e=>setPhone(e.target.value)} maxLength={13} style={{flex:1}}/>
+          </div>
+        </div>
+        <button className="btn btn-o" style={{marginBottom:16,opacity:ok?1:.3}} onClick={()=>ok&&onSendOtp()}>Recevoir le code OTP</button>
+        <div style={{textAlign:"center",fontSize:12,color:"#6B6B80"}}>En continuant, vous acceptez nos <span style={{color:"#F5A623"}}>Conditions d'utilisation</span></div>
+        <div style={{marginTop:28}}>
+          <div className="exo7" style={{fontSize:11,color:"#F5A623",letterSpacing:1.2,textTransform:"uppercase",marginBottom:12,textAlign:"center"}}>⚡ L'ÉCHELLE DES GAINS</div>
+          <div className="card" style={{padding:12}}>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr"}}>
+              {["MISE","GAIN JACKPOT","MULT."].map((h,i)=>(
+                <div key={h} className="exo7" style={{fontSize:10,color:"#6B6B80",paddingBottom:6,borderBottom:"1px solid #1E1E2E",textAlign:i===2?"right":i===1?"center":"left"}}>{h}</div>
+              ))}
+              {STAKES.map(s=>[
+                <div key={"a"+s.a} className="exo7" style={{padding:"4px 0",borderBottom:"1px solid rgba(30,30,46,.5)",fontSize:11}}>{fmt(s.a)}<span style={{color:"#6B6B80",fontSize:9}}>F</span></div>,
+                <div key={"g"+s.a} className="exo7" style={{padding:"4px 0",borderBottom:"1px solid rgba(30,30,46,.5)",textAlign:"center",color:"#F5A623",fontSize:11}}>{fmt(s.g)}<span style={{color:"#E8860A",fontSize:9}}>F</span></div>,
+                <div key={"m"+s.a} className="exo7" style={{padding:"4px 0",borderBottom:"1px solid rgba(30,30,46,.5)",textAlign:"right",color:"#00D46A",fontSize:11}}>x{s.m}</div>
+              ])}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── OTP ── */
+function OtpScreen({phone,otp,setOtp,onVerify,onBack}){
+  const refs=useRef([]);
+  const allFilled=otp.every(v=>v!=="");
+  const handleChange=(i,val)=>{
+    if(!/^[0-9]?$/.test(val))return;
+    const next=[...otp];next[i]=val;setOtp(next);
+    if(val&&i<5&&refs.current[i+1])refs.current[i+1].focus();
+  };
+  const handleKeyDown=(i,e)=>{
+    if(e.key==="Backspace"&&!otp[i]&&i>0&&refs.current[i-1])refs.current[i-1].focus();
+  };
+  return(
+    <div className="scr on" style={{padding:24}}>
+      <button onClick={onBack} style={{background:"none",border:"none",color:"#6B6B80",fontSize:22,cursor:"pointer",marginBottom:16}}>←</button>
+      <div className="exo" style={{fontSize:22,marginBottom:6}}>Vérification</div>
+      <div style={{fontSize:14,color:"#6B6B80",marginBottom:32}}>Code envoyé au <span style={{color:"#F0F0F8",fontWeight:600}}>+225 {phone}</span></div>
+      <div style={{display:"flex",gap:10,justifyContent:"center",marginBottom:32}}>
+        {otp.map((v,i)=>(
+          <input key={i} ref={el=>refs.current[i]=el} className="otp-inp" type="tel" maxLength={1} value={v} onChange={e=>handleChange(i,e.target.value)} onKeyDown={e=>handleKeyDown(i,e)}/>
+        ))}
+      </div>
+      <button className="btn btn-o" style={{opacity:allFilled?1:.3}} onClick={()=>allFilled&&onVerify()}>Vérifier le code</button>
+      <div style={{textAlign:"center",marginTop:16,fontSize:13,color:"#6B6B80"}}>
+        Pas reçu ? <span style={{color:"#F5A623",cursor:"pointer"}} onClick={()=>setOtp(["4","8","3","2","1","7"])}>Renvoyer</span>
+      </div>
+      {allFilled&&(
+        <div style={{marginTop:24,background:"#13131F",borderRadius:12,padding:14,textAlign:"center",border:"1px solid #252535"}}>
+          <div className="exo7" style={{fontSize:10,color:"#6B6B80",letterSpacing:.5}}>🔐 DÉMO — Code auto-rempli</div>
+          <div className="exo" style={{fontSize:26,letterSpacing:10,color:"#F5A623",marginTop:4}}>4 8 3 2 1 7</div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── HOME ── */
+function HomeScreen({balance,selections,onToggle,onClear,onConfirm}){
+  const count=Object.keys(selections).length;
+  const canConfirm=count===10;
+  const TICKER="🏆 JACKPOT DU JOUR (FOOTBALL)  •  MISEZ SUR 10 SCÉNARIOS  •  GAINS JUSQU'À 500 000 FCFA  •  RÉSULTATS EN TEMPS RÉEL  •  ";
+  return(
+    <div className="scr on" style={{paddingBottom:80}}>
+      <StatusBar balance={balance}/>
+      <div className="ticker-track"><span className="ticker-inner">{TICKER}{TICKER}</span></div>
+      <div style={{padding:"14px 16px 0"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+          <div>
+            <div className="exo" style={{fontSize:18}}>L'Expert 10</div>
+            <div style={{fontSize:12,color:"#6B6B80"}}>Sélectionnez exactement <span style={{color:"#F5A623"}}>10 issues</span></div>
+          </div>
+          <div style={{textAlign:"right"}}>
+            <div className="exo" style={{fontSize:30,color:canConfirm?"#00D46A":"#F0F0F8",transition:"color .2s"}}>{count}</div>
+            <div className="exo7" style={{fontSize:10,color:"#6B6B80"}}>/10 issues</div>
+          </div>
+        </div>
+        <div style={{marginBottom:14,display:"flex",justifyContent:"center",gap:4}}>
+          {Array(10).fill(0).map((_,i)=><div key={i} className={`dot ${i<count?"f":""}`}/>)}
+        </div>
+      </div>
+      <div style={{padding:"0 12px"}}>
+        {MATCHES.map(m=>{
+          const sel=selections[m.id];
+          return(
+            <div key={m.id} className="card" style={{marginBottom:8,borderRadius:12,padding:"12px 12px 10px",borderColor:sel?"#252545":"#1E1E2E",background:sel?"#14142A":"#13131F",transition:"all .2s"}}>
+              <div style={{display:"flex",justifyContent:"space-between",marginBottom:8}}>
+                <span className="exo7" style={{fontSize:9,color:"#F5A623",letterSpacing:1,textTransform:"uppercase"}}>{m.lg}</span>
+                <span style={{fontSize:10,color:"#6B6B80"}}>⏰ {m.t}</span>
+              </div>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
+                <span className="exo7" style={{fontSize:13}}>{m.h}</span>
+                <span className="exo7" style={{fontSize:10,color:"#6B6B80",background:"#1A1A2A",padding:"3px 8px",borderRadius:6}}>VS</span>
+                <span className="exo7" style={{fontSize:13}}>{m.a}</span>
+              </div>
+              <div style={{display:"flex",gap:6}}>
+                {["DOM","NUL","EXT"].map(o=>(
+                  <button key={o} className={`ob ${o.toLowerCase()} ${sel===o?"sel":""}`} onClick={()=>onToggle(m.id,o)}>{o}</button>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <div className="cbar">
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
+          <div style={{fontSize:12,color:"#6B6B80"}}><span className="exo7" style={{color:"#F0F0F8"}}>{count}</span>/10 sélections</div>
+          <button onClick={onClear} style={{width:28,height:28,borderRadius:"50%",background:"#13131F",border:"1px solid #1E1E2E",cursor:"pointer",color:"#6B6B80",fontSize:16,display:"flex",alignItems:"center",justifyContent:"center"}}>↺</button>
+        </div>
+        <button className="btn btn-o" style={{opacity:canConfirm?1:.3,fontSize:12}} onClick={()=>canConfirm&&onConfirm()}>
+          {canConfirm?"🔥  CONFIRMER MON PARI — 10/10  →":"CONFIRMER MON PARI (MIN. 10 SCÉNARIOS)"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ── MISE ── */
+function MiseScreen({balance,selectedStake,setSelectedStake,onClose,onValidate}){
+  const canPay=selectedStake!==null;
+  return(
+    <div className="scr on" style={{display:"flex",flexDirection:"column",justifyContent:"flex-end",background:"rgba(0,0,0,.88)"}}>
+      <div style={{background:"#0F0F1A",borderRadius:"24px 24px 0 0",borderTop:"1px solid #252535",padding:20,maxHeight:"91%",overflowY:"auto"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
+          <div className="exo" style={{fontSize:20}}>Choisir votre mise</div>
+          <button onClick={onClose} style={{background:"none",border:"none",color:"#6B6B80",fontSize:22,cursor:"pointer"}}>✕</button>
+        </div>
+        <div style={{fontSize:12,color:"#6B6B80",marginBottom:20}}>
+          Ticket : <span className="exo7" style={{color:"#00D46A"}}>10/10 sélections ✓</span>
+          {"   "}Solde : <span className="exo7" style={{color:"#F0F0F8"}}>{fmt(balance)} FCFA</span>
+        </div>
+        {STAKES.map(s=>(
+          <div key={s.a} className={`stk ${selectedStake?.a===s.a?"sel":""}`} onClick={()=>setSelectedStake(s)}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+              <div>
+                <div className="exo7" style={{fontSize:15}}>{fmt(s.a)} <span style={{fontSize:11,color:"#6B6B80"}}>FCFA</span></div>
+                <div style={{fontSize:11,color:"#6B6B80"}}>Multiplicateur <span style={{color:"#F5A623"}}>x{s.m}</span></div>
+              </div>
+              <div style={{textAlign:"right"}}>
+                <div className="exo" style={{fontSize:18,color:"#F5A623"}}>{fmt(s.g)}</div>
+                <div style={{fontSize:10,color:"#6B6B80"}}>FCFA potentiel</div>
+              </div>
+            </div>
+          </div>
+        ))}
+        {selectedStake&&(
+          <div style={{marginBottom:16,background:"rgba(245,166,35,.08)",borderRadius:14,padding:14,border:"1px solid rgba(245,166,35,.3)"}}>
+            <div className="exo7" style={{fontSize:10,color:"#6B6B80",letterSpacing:.8,marginBottom:8}}>⚡ RÉCAPITULATIF DU TICKET</div>
+            <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
+              <span style={{fontSize:13,color:"#6B6B80"}}>Mise</span>
+              <span className="exo7" style={{fontSize:16}}>{fmt(selectedStake.a)} FCFA</span>
+            </div>
+            <div style={{display:"flex",justifyContent:"space-between"}}>
+              <span style={{fontSize:13,color:"#6B6B80"}}>Gain si 10/10 corrects</span>
+              <span className="exo" style={{fontSize:16,color:"#F5A623"}}>{fmt(selectedStake.g)} FCFA</span>
+            </div>
+          </div>
+        )}
+        <button className="btn btn-o" style={{opacity:canPay?1:.3}} onClick={()=>canPay&&onValidate()}>VALIDER LE TICKET & PAYER</button>
+      </div>
+    </div>
+  );
+}
+
+/* ── SUCCESS ── */
+function SuccessScreen({ticket,onViewBets,onNewBet}){
+  if(!ticket)return null;
+  return(
+    <div className="scr on" style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:24}}>
+      <div className="scale-in" style={{textAlign:"center",width:"100%"}}>
+        <div style={{width:96,height:96,borderRadius:"50%",background:"rgba(0,212,106,.15)",border:"2px solid #00D46A",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 20px",fontSize:48,color:"#00D46A"}}>✓</div>
+        <div className="exo" style={{fontSize:26,marginBottom:6}}>Ticket validé !</div>
+        <div style={{fontSize:14,color:"#6B6B80",marginBottom:28}}>Bonne chance pour vos 10 pronostics 🍀</div>
+        <div className="card" style={{textAlign:"left",marginBottom:20}}>
+          <div className="exo7" style={{fontSize:10,color:"#F5A623",letterSpacing:1,marginBottom:12}}>🎫 VOTRE TICKET</div>
+          <div style={{fontSize:12,color:"#6B6B80",marginBottom:12}}>Réf : {ticket.id}</div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+            <div>
+              <div className="exo7" style={{fontSize:10,color:"#6B6B80"}}>MISE</div>
+              <div className="exo" style={{fontSize:20}}>{fmt(ticket.stake)} <span style={{fontSize:11,color:"#6B6B80"}}>FCFA</span></div>
+            </div>
+            <div>
+              <div className="exo7" style={{fontSize:10,color:"#6B6B80"}}>GAIN POTENTIEL</div>
+              <div className="exo" style={{fontSize:20,color:"#F5A623"}}>{fmt(ticket.gain)} <span style={{fontSize:11}}>FCFA</span></div>
+            </div>
+          </div>
+        </div>
+        <button className="btn btn-g" style={{marginBottom:10}} onClick={onViewBets}>Voir mes paris</button>
+        <button className="btn btn-ghost" onClick={onNewBet}>Faire un autre pari</button>
+      </div>
+    </div>
+  );
+}
+
+/* ── MES PARIS ── */
+function MesParis({balance,tickets,filter,setFilter}){
+  const filtered=filter==="all"?tickets:tickets.filter(t=>t.status===filter);
+  const statusMap={won:"bw",lost:"bl",pending:"bp"};
+  const statusLabel={won:"Gagné 🏆",lost:"Perdu ✗",pending:"En cours..."};
+  return(
+    <div className="scr on" style={{paddingBottom:80}}>
+      <StatusBar balance={balance}/>
+      <div style={{padding:16}}>
+        <div className="exo" style={{fontSize:22,marginBottom:4}}>Mes Paris</div>
+        <div style={{fontSize:12,color:"#6B6B80",marginBottom:16}}>Historique de vos tickets</div>
+        <div style={{display:"flex",gap:6,marginBottom:16}}>
+          {[{id:"all",l:"Tous"},{id:"pending",l:"En cours"},{id:"won",l:"Gagnés"},{id:"lost",l:"Perdus"}].map(f=>(
+            <button key={f.id} className={`tab-btn ${filter===f.id?"ac":""}`} onClick={()=>setFilter(f.id)}>{f.l}</button>
+          ))}
+        </div>
+        {filtered.length===0?(
+          <div style={{textAlign:"center",padding:"40px 0",color:"#6B6B80"}}>
+            <div style={{fontSize:40,marginBottom:10}}>🎫</div>
+            <div className="exo7" style={{fontSize:14}}>Aucun ticket</div>
+          </div>
+        ):filtered.map(t=>(
+          <div key={t.id} className="card" style={{marginBottom:10,borderRadius:12}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
+              <div>
+                <div className="exo7" style={{fontSize:12,color:"#6B6B80"}}>{t.date}</div>
+                <div style={{fontSize:10,color:"#3A3A4A"}}>{t.id}</div>
+              </div>
+              <span className={`badge ${statusMap[t.status]}`}>{statusLabel[t.status]}</span>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,borderTop:"1px solid #1E1E2E",paddingTop:10}}>
+              <div>
+                <div className="exo7" style={{fontSize:10,color:"#6B6B80",marginBottom:3}}>MISE</div>
+                <div className="exo7" style={{fontSize:16}}>{fmt(t.stake)} <span style={{fontSize:10,color:"#6B6B80"}}>FCFA</span></div>
+              </div>
+              <div>
+                <div className="exo7" style={{fontSize:10,color:"#6B6B80",marginBottom:3}}>{t.status==="won"?"GAGNÉ":"POTENTIEL"}</div>
+                <div className="exo7" style={{fontSize:16,color:t.status==="won"?"#00D46A":"#F5A623"}}>{fmt(t.gain)} <span style={{fontSize:10}}>FCFA</span></div>
+              </div>
+            </div>
+            {t.status==="pending"&&(
+              <div style={{marginTop:10,background:"#0C0C16",borderRadius:8,padding:10,border:"1px solid #1E1E2E"}}>
+                <div className="exo7" style={{fontSize:10,color:"#6B6B80",marginBottom:5}}>PROGRESSION DU TICKET</div>
+                <div style={{display:"flex",gap:3,marginBottom:5}}>
+                  {Array(10).fill(0).map((_,i)=>(
+                    <div key={i} style={{flex:1,height:5,borderRadius:3,background:i<t.progress?"#F5A623":"#1E1E2E",transition:"background .2s"}}/>
+                  ))}
+                </div>
+                <div className="exo7 pulsing" style={{fontSize:11,color:"#F5A623"}}>{t.progress}/10 matchs joués</div>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ── DEPOT ── */
+function DepotScreen({balance,notif,onDeposit}){
+  const [amount,setAmount]=useState("");
+  const [method,setMethod]=useState("wave");
+  const amt=parseInt(amount);
+  const canPay=!isNaN(amt)&&amt>=100;
+  const methods=[
+    {id:"wave",label:"Wave",sub:"Transfert instantané",bg:"#0033AA",abbr:"W",tc:"#fff"},
+    {id:"orange",label:"Orange Money",sub:"Disponible 24h/24",bg:"#FF6200",abbr:"OM",tc:"#fff"},
+    {id:"mtn",label:"MTN MoMo",sub:"Mobile Money",bg:"#FFD600",abbr:"MTN",tc:"#000"},
+  ];
+  return(
+    <div className="scr on" style={{paddingBottom:80}}>
+      <StatusBar balance={balance}/>
+      {notif&&(
+        <div className="notif">
+          <div style={{width:32,height:32,borderRadius:"50%",background:"rgba(0,212,106,.15)",display:"flex",alignItems:"center",justifyContent:"center",color:"#00D46A",fontSize:18,flexShrink:0}}>✓</div>
+          <div>
+            <div className="exo7" style={{fontSize:13,color:"#00D46A"}}>Dépôt confirmé !</div>
+            <div style={{fontSize:11,color:"#6B6B80"}}>{notif}</div>
+          </div>
+        </div>
+      )}
+      <div style={{padding:16}}>
+        <div className="exo" style={{fontSize:22,marginBottom:4}}>Dépôt</div>
+        <div style={{fontSize:12,color:"#6B6B80",marginBottom:16}}>Rechargez votre portefeuille</div>
+        <div className="card" style={{marginBottom:20,background:"#0F0F1A",borderColor:"#252535"}}>
+          <div className="exo7" style={{fontSize:11,color:"#6B6B80",letterSpacing:.8,marginBottom:4}}>SOLDE ACTUEL</div>
+          <div style={{display:"flex",alignItems:"baseline",gap:6}}>
+            <span className="exo" style={{fontSize:32}}>{fmt(balance)}</span>
+            <span style={{fontSize:14,color:"#6B6B80"}}>FCFA</span>
+          </div>
+        </div>
+        <div style={{marginBottom:16}}>
+          <div className="exo7" style={{fontSize:11,color:"#6B6B80",letterSpacing:.8,marginBottom:8}}>MONTANT À DÉPOSER (FCFA)</div>
+          <input className="inp" type="number" placeholder="Ex: 5 000" value={amount} onChange={e=>setAmount(e.target.value)}/>
+          <div style={{display:"flex",gap:6,marginTop:8}}>
+            {[1000,2000,5000,10000].map(a=>(
+              <button key={a} onClick={()=>setAmount(String(a))} style={{flex:1,padding:"8px 0",borderRadius:8,border:`1px solid ${amount===String(a)?"#F5A623":"#252535"}`,background:amount===String(a)?"rgba(245,166,35,.1)":"#13131F",color:amount===String(a)?"#F5A623":"#F0F0F8",fontFamily:"'Exo 2',sans-serif",fontWeight:700,fontSize:11,cursor:"pointer",transition:"all .2s"}}>
+                {fmt(a)}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div style={{marginBottom:20}}>
+          <div className="exo7" style={{fontSize:11,color:"#6B6B80",letterSpacing:.8,marginBottom:10}}>MÉTHODE DE PAIEMENT</div>
+          {methods.map(m=>(
+            <div key={m.id} className={`dm ${method===m.id?"sel":""}`} onClick={()=>setMethod(m.id)}>
+              <div style={{width:40,height:40,borderRadius:12,background:m.bg,display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:900,fontFamily:"'Exo 2',sans-serif",color:m.tc,flexShrink:0}}>{m.abbr}</div>
+              <div style={{flex:1}}>
+                <div style={{fontSize:14,fontWeight:600}}>{m.label}</div>
+                <div style={{fontSize:11,color:"#6B6B80"}}>{m.sub}</div>
+              </div>
+              {method===m.id&&<div className="exo7" style={{color:"#F5A623",marginLeft:"auto"}}>✓</div>}
+            </div>
+          ))}
+        </div>
+        <button className="btn btn-o" style={{opacity:canPay?1:.3}} onClick={()=>canPay&&onDeposit(amt)}>DÉPOSER MAINTENANT</button>
+      </div>
+    </div>
+  );
+}
+
+/* ── COMPTE ── */
+function CompteScreen({balance,tickets}){
+  const won=tickets.filter(t=>t.status==="won").length;
+  const rate=tickets.length>0?Math.round((won/tickets.length)*100):0;
+  return(
+    <div className="scr on" style={{paddingBottom:80}}>
+      <StatusBar balance={balance}/>
+      <div style={{padding:16}}>
+        <div style={{textAlign:"center",marginBottom:24}}>
+          <div style={{width:78,height:78,borderRadius:"50%",background:"linear-gradient(135deg,#F5A623,#E8860A)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:28,fontWeight:900,fontFamily:"'Exo 2',sans-serif",color:"#000",margin:"0 auto 10px"}}>MS</div>
+          <div className="exo" style={{fontSize:20}}>Moussa S.</div>
+          <div style={{fontSize:12,color:"#6B6B80"}}>+225 07 12 34 56 78</div>
+          <div style={{marginTop:8}}><span className="badge bw">✓ Compte Vérifié</span></div>
+        </div>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:20}}>
+          {[{v:tickets.length,l:"PARIS",c:"#F0F0F8"},{v:won,l:"GAGNÉS",c:"#00D46A"},{v:rate+"%",l:"WIN RATE",c:"#F5A623"}].map((s,i)=>(
+            <div key={i} className="card" style={{textAlign:"center",padding:10}}>
+              <div className="exo" style={{fontSize:20,color:s.c}}>{s.v}</div>
+              <div className="exo7" style={{fontSize:9,color:"#6B6B80"}}>{s.l}</div>
+            </div>
+          ))}
+        </div>
+        <div className="card" style={{marginBottom:16,background:"#0F0F1A",borderColor:"#252535"}}>
+          <div className="exo7" style={{fontSize:10,color:"#6B6B80",letterSpacing:.8,marginBottom:4}}>SOLDE DU PORTEFEUILLE</div>
+          <div style={{display:"flex",alignItems:"baseline",gap:6}}>
+            <span className="exo" style={{fontSize:26}}>{fmt(balance)}</span>
+            <span style={{fontSize:13,color:"#6B6B80"}}>FCFA</span>
+          </div>
+        </div>
+        {[["💳","Retraits","Demander un retrait"],["📋","Historique","Tous vos tickets"],["🔔","Notifications","Alertes & résultats"],["🔒","Sécurité","PIN & 2FA"],["❓","Aide","FAQ & Support"]].map(([icon,label,sub])=>(
+          <div key={label} className="menu-item">
+            <div style={{width:36,height:36,background:"#1A1A2A",borderRadius:10,display:"flex",alignItems:"center",justifyContent:"center",fontSize:16}}>{icon}</div>
+            <div style={{flex:1}}>
+              <div style={{fontSize:14,fontWeight:600}}>{label}</div>
+              <div style={{fontSize:11,color:"#6B6B80"}}>{sub}</div>
+            </div>
+            <div style={{color:"#6B6B80",fontSize:18}}>›</div>
+          </div>
+        ))}
+        <div style={{display:"flex",gap:16,marginTop:20,justifyContent:"center"}}>
+          {[{bg:"#25D366",icon:"💬",label:"WhatsApp"},{bg:"#2CA5E0",icon:"✈",label:"Telegram"}].map(b=>(
+            <div key={b.label} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:5}}>
+              <button style={{width:48,height:48,borderRadius:"50%",background:b.bg,border:"none",cursor:"pointer",fontSize:22}}>{b.icon}</button>
+              <span className="exo7" style={{fontSize:10,color:"#6B6B80"}}>{b.label}</span>
+            </div>
+          ))}
+        </div>
+        <div className="exo7" style={{textAlign:"center",marginTop:8,fontSize:10,color:"#252535"}}>Support disponible 7j/7 — 8h à 22h</div>
+      </div>
+    </div>
+  );
+}
+
+/* ── ROOT APP ── */
+function App(){
+  const [screen,setScreen]=useState("splash");
+  const [phone,setPhone]=useState("");
+  const [otp,setOtp]=useState(["","","","","",""]);
+  const [selections,setSelections]=useState({});
+  const [selectedStake,setSelectedStake]=useState(null);
+  const [balance,setBalance]=useState(12500);
+  const [tickets,setTickets]=useState(INIT_TICKETS);
+  const [ticketFilter,setTicketFilter]=useState("all");
+  const [successTicket,setSuccessTicket]=useState(null);
+  const [depotNotif,setDepotNotif]=useState(null);
+
+  useEffect(()=>{
+    if(screen==="splash"){const t=setTimeout(()=>setScreen("login"),2300);return()=>clearTimeout(t);}
+  },[screen]);
+  useEffect(()=>{
+    if(screen==="otp"){const t=setTimeout(()=>setOtp(["4","8","3","2","1","7"]),1400);return()=>clearTimeout(t);}
+  },[screen]);
+  useEffect(()=>{
+    if(depotNotif){const t=setTimeout(()=>setDepotNotif(null),3200);return()=>clearTimeout(t);}
+  },[depotNotif]);
+
+  const toggleSelection=(id,outcome)=>{
+    setSelections(prev=>{
+      const next={...prev};
+      if(next[id]===outcome){delete next[id];}
+      else if(!next[id]&&Object.keys(next).length>=10)return prev;
+      else next[id]=outcome;
+      return next;
+    });
+  };
+
+  const validateTicket=()=>{
+    if(!selectedStake)return;
+    const newT={id:"TK-"+Date.now().toString().slice(-4),date:"16 Mar 2025",stake:selectedStake.a,gain:selectedStake.g,status:"pending",progress:2};
+    setSuccessTicket(newT);
+    setTickets(prev=>[newT,...prev]);
+    setBalance(prev=>prev-selectedStake.a);
+    setSelections({});
+    setSelectedStake(null);
+    setScreen("success");
+  };
+
+  const handleDeposit=(amt)=>{
+    setBalance(prev=>prev+amt);
+    setDepotNotif("+"+fmt(amt)+" FCFA ajoutés au solde");
+  };
+
+  const mainScreens=["home","paris","depot","compte"];
+  const go=s=>setScreen(s);
+
+  return(
+    <div className="phone-wrap">
+      <div id="ph">
+        {screen==="splash"  &&<SplashScreen/>}
+        {screen==="login"   &&<LoginScreen phone={phone} setPhone={setPhone} onSendOtp={()=>setScreen("otp")}/>}
+        {screen==="otp"     &&<OtpScreen phone={phone} otp={otp} setOtp={setOtp} onVerify={()=>setScreen("home")} onBack={()=>setScreen("login")}/>}
+        {screen==="home"    &&<HomeScreen balance={balance} selections={selections} onToggle={toggleSelection} onClear={()=>setSelections({})} onConfirm={()=>setScreen("mise")}/>}
+        {screen==="mise"    &&<MiseScreen balance={balance} selectedStake={selectedStake} setSelectedStake={setSelectedStake} onClose={()=>setScreen("home")} onValidate={validateTicket}/>}
+        {screen==="success" &&<SuccessScreen ticket={successTicket} onViewBets={()=>setScreen("paris")} onNewBet={()=>{setSelections({});setScreen("home");}}/>}
+        {screen==="paris"   &&<MesParis balance={balance} tickets={tickets} filter={ticketFilter} setFilter={setTicketFilter}/>}
+        {screen==="depot"   &&<DepotScreen balance={balance} notif={depotNotif} onDeposit={handleDeposit}/>}
+        {screen==="compte"  &&<CompteScreen balance={balance} tickets={tickets}/>}
+        {mainScreens.includes(screen)&&<BottomNav screen={screen} onNav={go}/>}
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
