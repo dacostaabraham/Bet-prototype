@@ -6,32 +6,33 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0C0C16">
-<title>10BET — Jackpot Simplifié</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
+<title>10BET v2 — Jackpot Simplifié</title>
 <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;background:#0C0C16;overflow:hidden;}
 #root{height:100%;display:flex;align-items:center;justify-content:center;}
-
-/* ── On mobile : full screen ── */
 @media(max-width:500px){
   #ph{width:100vw!important;height:100dvh!important;border-radius:0!important;border:none!important;}
   .phone-wrap{padding:0!important;background:transparent!important;}
   #root{align-items:flex-start;}
 }
 .phone-wrap{background:#1A1A2A;border-radius:28px;padding:16px;display:flex;}
-
-/* ── Phone shell ── */
 #ph{width:390px;height:844px;background:#0C0C16;border-radius:44px;border:2px solid #252535;overflow:hidden;position:relative;font-family:'Barlow',-apple-system,sans-serif;color:#F0F0F8;-webkit-font-smoothing:antialiased;flex-shrink:0;}
+
+/* ── SCREENS ── */
 .scr{position:absolute;top:0;left:0;right:0;bottom:0;overflow-y:auto;overflow-x:hidden;background:#0C0C16;display:none;}
 .scr.on{display:block;}
 .scr::-webkit-scrollbar{display:none;}
 
-/* ── Status bar ── */
+/* ── MATCH DETAIL SCREEN (slide from right) ── */
+#scr-match{transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:block!important;}
+#scr-match.on{transform:translateX(0);}
+
+/* ── STATUS BAR ── */
 .sbar{height:44px;display:flex;justify-content:space-between;align-items:center;padding:10px 20px 0;position:sticky;top:0;background:#0C0C16;z-index:20;}
 
-/* ── Bottom nav ── */
+/* ── BOTTOM NAV ── */
 .bnav{position:absolute;bottom:0;left:0;right:0;height:72px;background:#0C0C16;border-top:1px solid #1E1E2E;display:flex;z-index:50;padding:8px 0 16px;}
 .ni{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px 0;}
 .ni svg{width:20px;height:20px;fill:#6B6B80;transition:fill .2s;}
@@ -39,119 +40,215 @@ html,body{height:100%;background:#0C0C16;overflow:hidden;}
 .ni.ac svg{fill:#F5A623;}
 .ni.ac .ni-lbl{color:#F5A623;}
 
-/* ── Typography ── */
+/* ── TYPOGRAPHY ── */
 .exo{font-family:'Exo 2',sans-serif;font-weight:900;}
 .exo7{font-family:'Exo 2',sans-serif;font-weight:700;}
 
-/* ── Buttons ── */
+/* ── BUTTONS ── */
 .btn{display:block;width:100%;padding:15px;border:none;border-radius:12px;cursor:pointer;font-family:'Exo 2',sans-serif;font-weight:800;font-size:13px;letter-spacing:.4px;transition:transform .15s;user-select:none;text-align:center;}
 .btn:active{transform:scale(.97);}
 .btn-g{background:linear-gradient(135deg,#00D46A,#00A850);color:#000;}
 .btn-o{background:linear-gradient(135deg,#F5A623,#E8860A);color:#000;}
 .btn-ghost{background:#13131F;color:#F0F0F8;border:1px solid #252535;}
 
-/* ── Cards ── */
+/* ── RED PARIER BUTTON ── */
+.btn-parier{background:linear-gradient(135deg,#EF4444,#C01C1C);color:#fff;font-family:'Exo 2',sans-serif;font-weight:900;font-size:16px;letter-spacing:1.5px;border:none;border-radius:14px;padding:18px;cursor:pointer;transition:transform .15s,box-shadow .15s;display:block;width:100%;text-align:center;box-shadow:0 4px 20px rgba(239,68,68,.3);}
+.btn-parier:active{transform:scale(.97);}
+.btn-parier:disabled{opacity:.3;cursor:not-allowed;}
+.btn-parier.ready{animation:pulseRed 2s ease infinite;}
+@keyframes pulseRed{0%,100%{box-shadow:0 4px 20px rgba(239,68,68,.3);}50%{box-shadow:0 4px 32px rgba(239,68,68,.6);}}
+
+/* ── CARDS ── */
 .card{background:#13131F;border-radius:14px;border:1px solid #1E1E2E;padding:14px;}
 
-/* ── Outcome buttons ── */
-.ob{flex:1;padding:8px 4px;border-radius:8px;border:1.5px solid #252535;background:#1A1A2A;color:#6B6B80;font-family:'Exo 2',sans-serif;font-weight:700;font-size:11px;cursor:pointer;transition:all .15s;letter-spacing:.3px;text-align:center;}
-.ob:active{transform:scale(.95);}
-.ob.dom.sel{background:rgba(0,212,106,.15);border-color:#00D46A;color:#00D46A;}
-.ob.nul.sel{background:rgba(245,166,35,.15);border-color:#F5A623;color:#F5A623;}
-.ob.ext.sel{background:rgba(129,140,248,.15);border-color:#818CF8;color:#818CF8;}
+/* ── MATCH CARD (home list) ── */
+.mcard{background:#13131F;border:1px solid #1E1E2E;border-radius:14px;margin-bottom:8px;padding:12px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;}
+.mcard:active{transform:scale(.98);}
+.mcard.selected{border-color:#F5A623;background:#14142A;}
+.mcard-live-bar{position:absolute;top:0;left:0;height:3px;background:linear-gradient(90deg,#EF4444,#F5A623);transition:width .5s ease;}
 
-/* ── Stake rows ── */
+/* ── BIG SCENARIO OPTION BUTTONS ── */
+.sopt{flex:1;padding:12px 6px;border-radius:10px;border:1.5px solid #252535;background:#1A1A2A;color:#6B6B80;font-family:'Exo 2',sans-serif;font-weight:700;font-size:12px;cursor:pointer;transition:all .2s;text-align:center;min-height:54px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;}
+.sopt:active{transform:scale(.95);}
+.sopt.sel-1x2{background:rgba(0,212,106,.15);border-color:#00D46A;color:#00D46A;}
+.sopt.sel-dc{background:rgba(129,140,248,.15);border-color:#818CF8;color:#818CF8;}
+.sopt.sel-bts{background:rgba(245,166,35,.15);border-color:#F5A623;color:#F5A623;}
+.sopt.sel-ou{background:rgba(59,130,246,.15);border-color:#3B82F6;color:#3B82F6;}
+.sopt.sel-ht{background:rgba(236,72,153,.15);border-color:#EC4899;color:#EC4899;}
+.sopt.sel-score{background:rgba(16,185,129,.15);border-color:#10B981;color:#10B981;}
+.market-block{margin-bottom:14px;background:#13131F;border:1px solid #1E1E2E;border-radius:12px;padding:12px;}
+
+/* ── SELECTION DOTS (bigger) ── */
+.dot{width:16px;height:16px;border-radius:50%;background:#1E1E2E;transition:all .25s;display:inline-flex;align-items:center;justify-content:center;border:1.5px solid #2A2A3A;}
+.dot.f{background:#00D46A;border-color:#00D46A;box-shadow:0 0 8px rgba(0,212,106,.5);}
+.dot.f::after{content:'';width:6px;height:6px;border-radius:50%;background:#fff;}
+
+/* ── STAKE ROWS ── */
 .stk{background:#13131F;border:1.5px solid #1E1E2E;border-radius:14px;padding:14px 12px;cursor:pointer;transition:all .2s;margin-bottom:8px;}
 .stk.sel{border-color:#F5A623;background:rgba(245,166,35,.07);}
 .stk:active{transform:scale(.98);}
 
-/* ── Badges ── */
+/* ── BADGES ── */
 .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:10px;font-family:'Exo 2',sans-serif;font-weight:700;letter-spacing:.5px;text-transform:uppercase;}
 .bw{background:rgba(0,212,106,.12);color:#00D46A;border:1px solid rgba(0,212,106,.3);}
 .bl{background:rgba(239,68,68,.12);color:#EF4444;border:1px solid rgba(239,68,68,.3);}
 .bp{background:rgba(245,166,35,.12);color:#F5A623;border:1px solid rgba(245,166,35,.3);}
+.blive{background:rgba(239,68,68,.15);color:#EF4444;border:1px solid rgba(239,68,68,.4);animation:pulseBadge 1.5s ease infinite;}
+@keyframes pulseBadge{0%,100%{opacity:1;}50%{opacity:.6;}}
 
-/* ── Inputs ── */
+/* ── INPUTS ── */
 .inp{width:100%;background:#13131F;border:1.5px solid #252535;border-radius:12px;padding:14px 16px;color:#F0F0F8;font-family:'Barlow',sans-serif;font-size:16px;outline:none;transition:border-color .2s;box-sizing:border-box;}
 .inp:focus{border-color:#F5A623;}
 .otp-inp{width:48px;height:58px;background:#13131F;border:1.5px solid #252535;border-radius:12px;color:#F0F0F8;font-family:'Exo 2',sans-serif;font-size:22px;font-weight:700;text-align:center;outline:none;transition:border-color .2s;}
 .otp-inp:focus{border-color:#F5A623;}
 
-/* ── Deposit method ── */
+/* ── DEPOSIT METHOD ── */
 .dm{background:#13131F;border:1.5px solid #1E1E2E;border-radius:14px;padding:13px 16px;cursor:pointer;display:flex;align-items:center;gap:12px;transition:all .2s;margin-bottom:10px;}
 .dm.sel{border-color:#F5A623;background:rgba(245,166,35,.05);}
 .dm:active{transform:scale(.98);}
 
-/* ── Progress dots ── */
-.dot{width:8px;height:8px;border-radius:50%;background:#1E1E2E;transition:all .2s;display:inline-block;margin:0 2px;}
-.dot.f{background:#00D46A;box-shadow:0 0 5px rgba(0,212,106,.5);}
-
-/* ── Ticker ── */
-.ticker-track{background:#F5A623;overflow:hidden;white-space:nowrap;padding:5px 0;}
-.ticker-inner{display:inline-block;animation:ticker-scroll 22s linear infinite;font-family:'Exo 2',sans-serif;font-weight:700;font-size:10px;color:#000;letter-spacing:.5px;}
-
-/* ── Confirm bar ── */
+/* ── CONFIRM BAR ── */
 .cbar{position:sticky;bottom:72px;background:rgba(12,12,22,.97);border-top:1px solid #1E1E2E;padding:12px 16px;z-index:30;backdrop-filter:blur(8px);}
 
-/* ── Tab buttons ── */
+/* ── TAB BUTTONS ── */
 .tab-btn{flex:1;padding:8px 4px;border-radius:10px;border:1.5px solid #1E1E2E;background:#13131F;color:#6B6B80;font-family:'Exo 2',sans-serif;font-weight:700;font-size:10px;cursor:pointer;transition:all .2s;}
 .tab-btn.ac{border-color:#F5A623;background:rgba(245,166,35,.1);color:#F5A623;}
 
-/* ── Notification ── */
+/* ── NOTIFICATION ── */
 .notif{position:absolute;top:54px;left:14px;right:14px;background:#13131F;border:1.5px solid #00D46A;border-radius:12px;padding:12px 14px;z-index:100;display:flex;align-items:center;gap:10px;animation:slideDown .3s ease;}
 
-/* ── Menu items ── */
+/* ── MENU ITEMS ── */
 .menu-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:#13131F;border:1px solid #1E1E2E;border-radius:12px;margin-bottom:6px;cursor:pointer;transition:background .2s;}
 .menu-item:active{background:#1A1A2A;}
 
-/* ── Animations ── */
+/* ── TICKER ── */
+.ticker-track{background:#F5A623;overflow:hidden;white-space:nowrap;padding:5px 0;}
+.ticker-inner{display:inline-block;animation:ticker-scroll 22s linear infinite;font-family:'Exo 2',sans-serif;font-weight:700;font-size:10px;color:#000;letter-spacing:.5px;}
+
+/* ── LIVE SCORE DISPLAY ── */
+.live-score{background:#0F0F1A;border-radius:16px;padding:20px 16px;margin:12px 16px;border:1px solid #252535;position:relative;}
+.score-display{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.team-col{flex:1;text-align:center;}
+.score-col{flex:0 0 80px;text-align:center;}
+.big-score{font-family:'Exo 2',sans-serif;font-weight:900;font-size:46px;color:#F0F0F8;line-height:1;}
+.score-sep{font-family:'Exo 2',sans-serif;font-weight:900;font-size:30px;color:#3A3A4A;line-height:1;}
+.minute-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.4);border-radius:20px;padding:4px 10px;font-family:'Exo 2',sans-serif;font-weight:700;font-size:11px;color:#EF4444;}
+.min-dot{width:7px;height:7px;border-radius:50%;background:#EF4444;animation:pulseBadge 1.2s ease infinite;}
+
+/* ── MATCH EVENTS LOG ── */
+.event-item{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(30,30,46,.5);}
+
+/* ── ANIMATIONS ── */
 @keyframes slideDown{from{opacity:0;transform:translateY(-10px);}to{opacity:1;transform:translateY(0);}}
 @keyframes scaleIn{from{transform:scale(0.5);opacity:0;}to{transform:scale(1);opacity:1;}}
 @keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
 @keyframes ticker-scroll{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
 @keyframes pulseGlow{0%,100%{opacity:1;}50%{opacity:.55;}}
+@keyframes goalFlash{0%{background:rgba(245,166,35,.0);}30%{background:rgba(245,166,35,.2);}100%{background:rgba(245,166,35,.0);}}
 .scale-in{animation:scaleIn .45s cubic-bezier(.34,1.56,.64,1) forwards;}
 .spinning{animation:spin 1s linear infinite;}
 .pulsing{animation:pulseGlow 2s ease infinite;}
+.goal-flash{animation:goalFlash 1.5s ease forwards;}
 </style>
 </head>
 <body>
 <div id="root"></div>
-
 <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <script type="text/babel">
-const { useState, useEffect, useRef } = React;
+const { useState, useEffect, useRef, useCallback } = React;
 
-/* ── DATA ── */
-const MATCHES = [
-  {id:1,h:"PSG",a:"Bayern Munich",lg:"Champions League",t:"19:00"},
-  {id:2,h:"Man City",a:"Real Madrid",lg:"Champions League",t:"21:00"},
-  {id:3,h:"Barcelona",a:"Inter Milan",lg:"Champions League",t:"19:00"},
-  {id:4,h:"Liverpool",a:"Dortmund",lg:"Champions League",t:"21:00"},
-  {id:5,h:"Atletico",a:"Porto",lg:"Champions League",t:"21:00"},
-  {id:6,h:"Arsenal",a:"Napoli",lg:"Europa League",t:"18:45"},
-  {id:7,h:"Roma",a:"Ajax",lg:"Europa League",t:"21:00"},
-  {id:8,h:"Juventus",a:"Benfica",lg:"Champions League",t:"21:00"},
-  {id:9,h:"Chelsea",a:"Shakhtar",lg:"Champions League",t:"19:00"},
-  {id:10,h:"AC Milan",a:"PSV",lg:"Champions League",t:"19:00"},
-  {id:11,h:"Leverkusen",a:"Celtic",lg:"Champions League",t:"21:00"},
-  {id:12,h:"Séville",a:"Man United",lg:"Europa League",t:"18:45"},
+/* ══════════ DATA ══════════ */
+const MATCHES_DEF = [
+  {id:1, h:"PSG",        a:"Bayern Munich", lg:"Champions League", kickoff:0},
+  {id:2, h:"Man City",   a:"Real Madrid",   lg:"Champions League", kickoff:12},
+  {id:3, h:"Barcelona",  a:"Inter Milan",   lg:"Champions League", kickoff:5},
+  {id:4, h:"Liverpool",  a:"Dortmund",      lg:"Champions League", kickoff:30},
+  {id:5, h:"Atletico",   a:"Porto",         lg:"Champions League", kickoff:18},
+  {id:6, h:"Arsenal",    a:"Napoli",        lg:"Europa League",    kickoff:45},
+  {id:7, h:"Roma",       a:"Ajax",          lg:"Europa League",    kickoff:60},
+  {id:8, h:"Juventus",   a:"Benfica",       lg:"Champions League", kickoff:22},
+  {id:9, h:"Chelsea",    a:"Shakhtar",      lg:"Champions League", kickoff:8},
+  {id:10,h:"AC Milan",   a:"PSV",           lg:"Champions League", kickoff:35},
+  {id:11,h:"Leverkusen", a:"Celtic",        lg:"Champions League", kickoff:50},
+  {id:12,h:"Séville",    a:"Man United",    lg:"Europa League",    kickoff:15},
 ];
 const STAKES = [
   {a:100,g:15000,m:150},{a:200,g:25000,m:125},{a:500,g:50000,m:100},
   {a:1000,g:85000,m:85},{a:2000,g:150000,m:75},{a:5000,g:300000,m:60},{a:10000,g:500000,m:50},
 ];
 const INIT_TICKETS = [
-  {id:"TK-2025-001",date:"14 Mar 2025",stake:500,gain:50000,status:"won",progress:10},
-  {id:"TK-2025-002",date:"15 Mar 2025",stake:1000,gain:85000,status:"lost",progress:10},
-  {id:"TK-2025-003",date:"16 Mar 2025",stake:200,gain:25000,status:"pending",progress:7},
+  {id:"TK-2025-001",date:"14 Mar",stake:500,gain:50000,status:"won",progress:10},
+  {id:"TK-2025-002",date:"15 Mar",stake:1000,gain:85000,status:"lost",progress:10},
+  {id:"TK-2025-003",date:"16 Mar",stake:200,gain:25000,status:"pending",progress:7},
 ];
 
+/* ══════════ HELPERS ══════════ */
 const fmt = n => n.toLocaleString("fr-FR");
+const rnd = (min,max) => Math.floor(Math.random()*(max-min+1))+min;
 
-/* ── LOGO ── */
+/* ══════════ MARKETS BUILDER ══════════ */
+function buildMarkets(ms) {
+  const {hScore,aScore,minute} = ms;
+  const total = hScore + aScore;
+  const diff = hScore - aScore;
+  const isLive = minute > 0;
+  const late = minute > 70;
+  return [
+    {
+      id:"1x2", label:"⚽ Résultat final", color:"sel-1x2",
+      opts:[
+        {k:"H", lbl: ms.homeName.split(" ")[0], sub:"Victoire dom."},
+        {k:"N", lbl:"Nul", sub:"Match nul"},
+        {k:"A", lbl: ms.awayName.split(" ")[0], sub:"Victoire ext."},
+      ]
+    },
+    {
+      id:"dc", label:"🔀 Double chance", color:"sel-dc",
+      opts:[
+        {k:"HN", lbl:"1 ou X", sub:"Dom. ou Nul"},
+        {k:"HA", lbl:"1 ou 2", sub:"Dom. ou Ext."},
+        {k:"NA", lbl:"X ou 2", sub:"Nul ou Ext."},
+      ]
+    },
+    {
+      id:"bts", label:"🥅 Les deux équipes marquent", color:"sel-bts",
+      opts:[
+        {k:"Y", lbl:"OUI", sub: isLive && hScore>0 && aScore>0 ? "✓ Déjà réalisé":isLive?"En attente":"—"},
+        {k:"N_bts", lbl:"NON", sub: isLive && (hScore===0||aScore===0) ? "✓ Tient":"—"},
+      ]
+    },
+    {
+      id:"ou", label:`📊 Total buts — plus/moins 2.5`, color:"sel-ou",
+      opts:[
+        {k:"OV", lbl:"+ 2.5", sub: isLive ? `Actuel: ${total} but${total>1?"s":""}` : "Plus de 2 buts"},
+        {k:"UN", lbl:"− 2.5", sub: isLive ? `Actuel: ${total} but${total>1?"s":""}` : "Moins de 3 buts"},
+      ]
+    },
+    {
+      id:"ht", label:"🕐 Résultat mi-temps", color:"sel-ht",
+      opts:[
+        {k:"HH", lbl: ms.homeName.split(" ")[0], sub:"Mène à la MT"},
+        {k:"HN", lbl:"Nul", sub:"Égalité MT"},
+        {k:"HA_ht", lbl: ms.awayName.split(" ")[0], sub:"Mène à la MT"},
+      ]
+    },
+    {
+      id:"score", label:"🎯 Score exact", color:"sel-score",
+      opts:[
+        {k:"10", lbl:"1 – 0", sub:"Dom. 1 à 0"},
+        {k:"11", lbl:"1 – 1", sub:"Match nul"},
+        {k:"20", lbl:"2 – 0", sub:"Dom. 2 à 0"},
+        {k:"21", lbl:"2 – 1", sub:"Dom. 2 à 1"},
+        {k:"00", lbl:"0 – 0", sub:"Blanc"},
+        {k:"01", lbl:"0 – 1", sub:"Ext. 1 à 0"},
+      ]
+    },
+  ];
+}
+
+/* ══════════ LOGO ══════════ */
 function Logo({size=22}){
   return(
     <span className="exo" style={{fontSize:size,letterSpacing:"-.5px",lineHeight:1}}>
@@ -162,7 +259,7 @@ function Logo({size=22}){
   );
 }
 
-/* ── STATUS BAR ── */
+/* ══════════ STATUS BAR ══════════ */
 function StatusBar({balance}){
   return(
     <div className="sbar">
@@ -176,7 +273,7 @@ function StatusBar({balance}){
   );
 }
 
-/* ── BOTTOM NAV ── */
+/* ══════════ BOTTOM NAV ══════════ */
 function BottomNav({screen,onNav}){
   const items=[
     {id:"home",label:"Accueil",d:"M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"},
@@ -197,7 +294,7 @@ function BottomNav({screen,onNav}){
   );
 }
 
-/* ── SPLASH ── */
+/* ══════════ SPLASH ══════════ */
 function SplashScreen(){
   return(
     <div className="scr on" style={{display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column"}}>
@@ -216,20 +313,16 @@ function SplashScreen(){
   );
 }
 
-/* ── LOGIN ── */
+/* ══════════ LOGIN ══════════ */
 function LoginScreen({phone,setPhone,onSendOtp}){
   const ok=phone.length>=8;
   return(
     <div className="scr on">
-      <div style={{height:170,background:"#0F0F1A",display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:8}}>
-        <Logo size={38}/>
-        <div className="exo7" style={{fontSize:10,color:"#6B6B80",letterSpacing:2.5,textTransform:"uppercase"}}>JACKPOT SIMPLIFIÉ</div>
+      <div style={{height:160,background:"#0F0F1A",display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:8}}>
+        <Logo size={38}/><div className="exo7" style={{fontSize:10,color:"#6B6B80",letterSpacing:2.5,textTransform:"uppercase"}}>JACKPOT SIMPLIFIÉ</div>
       </div>
       <div style={{padding:24}}>
-        <div style={{marginBottom:24}}>
-          <div className="exo" style={{fontSize:22,marginBottom:6}}>Bienvenue 👋</div>
-          <div style={{fontSize:14,color:"#6B6B80"}}>Entrez votre numéro pour commencer</div>
-        </div>
+        <div style={{marginBottom:24}}><div className="exo" style={{fontSize:22,marginBottom:6}}>Bienvenue 👋</div><div style={{fontSize:14,color:"#6B6B80"}}>Entrez votre numéro pour commencer</div></div>
         <div style={{marginBottom:16}}>
           <div className="exo7" style={{fontSize:11,color:"#6B6B80",letterSpacing:1,marginBottom:8}}>NUMÉRO DE TÉLÉPHONE</div>
           <div style={{display:"flex",gap:8}}>
@@ -238,17 +331,17 @@ function LoginScreen({phone,setPhone,onSendOtp}){
           </div>
         </div>
         <button className="btn btn-o" style={{marginBottom:16,opacity:ok?1:.3}} onClick={()=>ok&&onSendOtp()}>Recevoir le code OTP</button>
-        <div style={{textAlign:"center",fontSize:12,color:"#6B6B80"}}>En continuant, vous acceptez nos <span style={{color:"#F5A623"}}>Conditions d'utilisation</span></div>
-        <div style={{marginTop:28}}>
+        <div style={{textAlign:"center",fontSize:12,color:"#6B6B80"}}>En continuant, vous acceptez nos <span style={{color:"#F5A623"}}>CGU</span></div>
+        <div style={{marginTop:24}}>
           <div className="exo7" style={{fontSize:11,color:"#F5A623",letterSpacing:1.2,textTransform:"uppercase",marginBottom:12,textAlign:"center"}}>⚡ L'ÉCHELLE DES GAINS</div>
           <div className="card" style={{padding:12}}>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr"}}>
-              {["MISE","GAIN JACKPOT","MULT."].map((h,i)=>(
+              {["MISE","GAIN JACKPOT","×"].map((h,i)=>(
                 <div key={h} className="exo7" style={{fontSize:10,color:"#6B6B80",paddingBottom:6,borderBottom:"1px solid #1E1E2E",textAlign:i===2?"right":i===1?"center":"left"}}>{h}</div>
               ))}
               {STAKES.map(s=>[
                 <div key={"a"+s.a} className="exo7" style={{padding:"4px 0",borderBottom:"1px solid rgba(30,30,46,.5)",fontSize:11}}>{fmt(s.a)}<span style={{color:"#6B6B80",fontSize:9}}>F</span></div>,
-                <div key={"g"+s.a} className="exo7" style={{padding:"4px 0",borderBottom:"1px solid rgba(30,30,46,.5)",textAlign:"center",color:"#F5A623",fontSize:11}}>{fmt(s.g)}<span style={{color:"#E8860A",fontSize:9}}>F</span></div>,
+                <div key={"g"+s.a} className="exo7" style={{padding:"4px 0",borderBottom:"1px solid rgba(30,30,46,.5)",textAlign:"center",color:"#F5A623",fontSize:11}}>{fmt(s.g)}<span style={{fontSize:9}}>F</span></div>,
                 <div key={"m"+s.a} className="exo7" style={{padding:"4px 0",borderBottom:"1px solid rgba(30,30,46,.5)",textAlign:"right",color:"#00D46A",fontSize:11}}>x{s.m}</div>
               ])}
             </div>
@@ -259,7 +352,7 @@ function LoginScreen({phone,setPhone,onSendOtp}){
   );
 }
 
-/* ── OTP ── */
+/* ══════════ OTP ══════════ */
 function OtpScreen({phone,otp,setOtp,onVerify,onBack}){
   const refs=useRef([]);
   const allFilled=otp.every(v=>v!=="");
@@ -282,24 +375,163 @@ function OtpScreen({phone,otp,setOtp,onVerify,onBack}){
         ))}
       </div>
       <button className="btn btn-o" style={{opacity:allFilled?1:.3}} onClick={()=>allFilled&&onVerify()}>Vérifier le code</button>
-      <div style={{textAlign:"center",marginTop:16,fontSize:13,color:"#6B6B80"}}>
-        Pas reçu ? <span style={{color:"#F5A623",cursor:"pointer"}} onClick={()=>setOtp(["4","8","3","2","1","7"])}>Renvoyer</span>
-      </div>
-      {allFilled&&(
-        <div style={{marginTop:24,background:"#13131F",borderRadius:12,padding:14,textAlign:"center",border:"1px solid #252535"}}>
-          <div className="exo7" style={{fontSize:10,color:"#6B6B80",letterSpacing:.5}}>🔐 DÉMO — Code auto-rempli</div>
-          <div className="exo" style={{fontSize:26,letterSpacing:10,color:"#F5A623",marginTop:4}}>4 8 3 2 1 7</div>
-        </div>
-      )}
     </div>
   );
 }
 
-/* ── HOME ── */
-function HomeScreen({balance,selections,onToggle,onClear,onConfirm}){
-  const count=Object.keys(selections).length;
-  const canConfirm=count===10;
-  const TICKER="🏆 JACKPOT DU JOUR (FOOTBALL)  •  MISEZ SUR 10 SCÉNARIOS  •  GAINS JUSQU'À 500 000 FCFA  •  RÉSULTATS EN TEMPS RÉEL  •  ";
+/* ══════════ MATCH DETAIL SCREEN ══════════ */
+function MatchDetail({match, matchState, onBack, onParier, currentSel}){
+  const [tempSel, setTempSel] = useState(currentSel || null); // { marketId, optionKey }
+  const ms = matchState;
+  const markets = buildMarkets({...ms, homeName: match.h, awayName: match.a});
+  const hasSelection = tempSel !== null;
+
+  const handleSelect = (marketId, optionKey) => {
+    // Toggle: if same, deselect; otherwise select new one
+    if(tempSel && tempSel.marketId === marketId && tempSel.optionKey === optionKey){
+      setTempSel(null);
+    } else {
+      setTempSel({marketId, optionKey});
+    }
+  };
+
+  const getOptLabel = () => {
+    if(!tempSel) return null;
+    const mkt = markets.find(m=>m.id===tempSel.marketId);
+    if(!mkt) return null;
+    const opt = mkt.opts.find(o=>o.k===tempSel.optionKey);
+    return `${mkt.label} — ${opt?.lbl}`;
+  };
+
+  return(
+    <div id="scr-match" className={ms ? "on" : ""} style={{position:"absolute",top:0,left:0,right:0,bottom:0,overflow:"hidden",zIndex:60,background:"#0C0C16"}}>
+      <div style={{height:"100%",overflowY:"auto",overflowX:"hidden",paddingBottom:100}}>
+        {/* Header */}
+        <div style={{position:"sticky",top:0,background:"#0C0C16",zIndex:10,borderBottom:"1px solid #1E1E2E",padding:"12px 16px",display:"flex",alignItems:"center",gap:12}}>
+          <button onClick={onBack} style={{width:36,height:36,borderRadius:10,background:"#13131F",border:"1px solid #252535",cursor:"pointer",color:"#F0F0F8",fontSize:18,display:"flex",alignItems:"center",justifyContent:"center"}}>←</button>
+          <div style={{flex:1}}>
+            <div className="exo7" style={{fontSize:13}}>{match.h} vs {match.a}</div>
+            <div style={{fontSize:11,color:"#6B6B80"}}>{match.lg}</div>
+          </div>
+          <span className="badge blive">● LIVE</span>
+        </div>
+
+        {/* Live Score */}
+        <div className="live-score">
+          <div style={{textAlign:"center",marginBottom:12}}>
+            <div style={{display:"inline-flex",alignItems:"center",gap:6}} className="minute-badge">
+              <div className="min-dot"/>
+              <span>{ms.minute}'</span>
+            </div>
+          </div>
+          <div className="score-display">
+            <div className="team-col">
+              <div className="exo7" style={{fontSize:12,color:"#6B6B80",marginBottom:6}}>DOMICILE</div>
+              <div className="exo" style={{fontSize:14,marginBottom:8,lineHeight:1.2}}>{match.h}</div>
+            </div>
+            <div className="score-col">
+              <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:4}}>
+                <span className="big-score" style={{color: ms.hScore > ms.aScore ? "#00D46A" : "#F0F0F8"}}>{ms.hScore}</span>
+                <span className="score-sep">–</span>
+                <span className="big-score" style={{color: ms.aScore > ms.hScore ? "#00D46A" : "#F0F0F8"}}>{ms.aScore}</span>
+              </div>
+            </div>
+            <div className="team-col">
+              <div className="exo7" style={{fontSize:12,color:"#6B6B80",marginBottom:6}}>EXTÉRIEUR</div>
+              <div className="exo" style={{fontSize:14,marginBottom:8,lineHeight:1.2}}>{match.a}</div>
+            </div>
+          </div>
+
+          {/* Events log */}
+          {ms.events && ms.events.length > 0 && (
+            <div style={{marginTop:12,borderTop:"1px solid #1E1E2E",paddingTop:10}}>
+              {ms.events.slice(-3).map((ev,i)=>(
+                <div key={i} className="event-item">
+                  <span className="exo7" style={{fontSize:11,color:"#6B6B80",minWidth:30}}>{ev.min}'</span>
+                  <span style={{fontSize:14}}>{ev.type==="goal"?"⚽":ev.type==="yellow"?"🟨":"🟥"}</span>
+                  <span style={{fontSize:12}}>{ev.player}</span>
+                  <span style={{fontSize:11,color:"#6B6B80",marginLeft:"auto"}}>{ev.team}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Mini stats */}
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:6,marginTop:12}}>
+            {[
+              {l:"Possession",h:ms.posHome,a:ms.posAway,unit:"%"},
+              {l:"Tirs",h:ms.shotsHome,a:ms.shotsAway,unit:""},
+              {l:"Corners",h:ms.cornersHome,a:ms.cornersAway,unit:""},
+            ].map(s=>(
+              <div key={s.l} style={{background:"#0C0C16",borderRadius:8,padding:"8px 6px",textAlign:"center",border:"1px solid #1E1E2E"}}>
+                <div style={{display:"flex",justifyContent:"space-between",marginBottom:3}}>
+                  <span className="exo7" style={{fontSize:13,color:"#F0F0F8"}}>{s.h}{s.unit}</span>
+                  <span className="exo7" style={{fontSize:13,color:"#F0F0F8"}}>{s.a}{s.unit}</span>
+                </div>
+                <div style={{fontSize:9,color:"#6B6B80"}}>{s.l}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Markets */}
+        <div style={{padding:"0 12px"}}>
+          <div className="exo7" style={{fontSize:11,color:"#F5A623",letterSpacing:1,textTransform:"uppercase",marginBottom:12}}>CHOISIR UN SCÉNARIO</div>
+          {markets.map(mkt=>(
+            <div key={mkt.id} className="market-block">
+              <div className="exo7" style={{fontSize:11,color:"#6B6B80",marginBottom:10}}>{mkt.label}</div>
+              <div style={{display:"flex",gap:6}}>
+                {mkt.opts.map(opt=>{
+                  const isSel = tempSel && tempSel.marketId===mkt.id && tempSel.optionKey===opt.k;
+                  return(
+                    <button key={opt.k} className={`sopt ${isSel ? mkt.color : ""}`}
+                      onClick={()=>handleSelect(mkt.id, opt.k)}>
+                      <span className="exo7" style={{fontSize:13}}>{opt.lbl}</span>
+                      {opt.sub && <span style={{fontSize:9,opacity:.7}}>{opt.sub}</span>}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* PARIER BUTTON fixed at bottom */}
+      <div style={{position:"absolute",bottom:0,left:0,right:0,padding:"12px 16px 20px",background:"rgba(12,12,22,.97)",borderTop:"1px solid #1E1E2E"}}>
+        {hasSelection && (
+          <div style={{background:"rgba(239,68,68,.08)",borderRadius:10,padding:"8px 12px",marginBottom:10,border:"1px solid rgba(239,68,68,.2)"}}>
+            <div className="exo7" style={{fontSize:11,color:"#EF4444"}}>Mon scénario : {getOptLabel()}</div>
+          </div>
+        )}
+        <button
+          className={`btn-parier ${hasSelection?"ready":""}`}
+          disabled={!hasSelection}
+          onClick={()=>hasSelection && onParier(match.id, tempSel)}>
+          PARIER
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ══════════ HOME SCREEN ══════════ */
+function HomeScreen({balance, selections, matchStates, onMatchClick, onClear, onConfirm}){
+  const count = Object.keys(selections).length;
+  const canConfirm = count === 10;
+  const TICKER="🏆 JACKPOT DU JOUR (FOOTBALL)  •  10 PRONOSTICS  •  GAINS JUSQU'À 500 000 FCFA  •  MATCHS EN DIRECT  •  ";
+
+  const getSelLabel = (matchId) => {
+    const sel = selections[matchId];
+    if(!sel) return null;
+    const ms = matchStates[matchId];
+    const m = {homeName: MATCHES_DEF.find(x=>x.id===matchId)?.h || "", awayName: MATCHES_DEF.find(x=>x.id===matchId)?.a || ""};
+    const markets = buildMarkets({...ms, ...m});
+    const mkt = markets.find(x=>x.id===sel.marketId);
+    const opt = mkt?.opts.find(x=>x.k===sel.optionKey);
+    return opt ? `${opt.lbl}` : null;
+  };
+
   return(
     <div className="scr on" style={{paddingBottom:80}}>
       <StatusBar balance={balance}/>
@@ -308,73 +540,98 @@ function HomeScreen({balance,selections,onToggle,onClear,onConfirm}){
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
           <div>
             <div className="exo" style={{fontSize:18}}>L'Expert 10</div>
-            <div style={{fontSize:12,color:"#6B6B80"}}>Sélectionnez exactement <span style={{color:"#F5A623"}}>10 issues</span></div>
+            <div style={{fontSize:12,color:"#6B6B80"}}>Cliquez sur un match pour parier</div>
           </div>
           <div style={{textAlign:"right"}}>
             <div className="exo" style={{fontSize:30,color:canConfirm?"#00D46A":"#F0F0F8",transition:"color .2s"}}>{count}</div>
-            <div className="exo7" style={{fontSize:10,color:"#6B6B80"}}>/10 issues</div>
+            <div className="exo7" style={{fontSize:10,color:"#6B6B80"}}>/10 paris</div>
           </div>
         </div>
-        <div style={{marginBottom:14,display:"flex",justifyContent:"center",gap:4}}>
+        {/* BIGGER DOTS */}
+        <div style={{marginBottom:14,display:"flex",justifyContent:"center",gap:6}}>
           {Array(10).fill(0).map((_,i)=><div key={i} className={`dot ${i<count?"f":""}`}/>)}
         </div>
       </div>
+
       <div style={{padding:"0 12px"}}>
-        {MATCHES.map(m=>{
-          const sel=selections[m.id];
+        {MATCHES_DEF.map(m=>{
+          const ms = matchStates[m.id];
+          const sel = selections[m.id];
+          const liveProgress = Math.min(ms.minute/90*100, 100);
           return(
-            <div key={m.id} className="card" style={{marginBottom:8,borderRadius:12,padding:"12px 12px 10px",borderColor:sel?"#252545":"#1E1E2E",background:sel?"#14142A":"#13131F",transition:"all .2s"}}>
+            <div key={m.id} className={`mcard ${sel?"selected":""}`} onClick={()=>onMatchClick(m.id)}>
+              <div className="mcard-live-bar" style={{width:`${liveProgress}%`}}/>
               <div style={{display:"flex",justifyContent:"space-between",marginBottom:8}}>
                 <span className="exo7" style={{fontSize:9,color:"#F5A623",letterSpacing:1,textTransform:"uppercase"}}>{m.lg}</span>
-                <span style={{fontSize:10,color:"#6B6B80"}}>⏰ {m.t}</span>
+                <div style={{display:"flex",alignItems:"center",gap:6}}>
+                  <span className="badge blive" style={{fontSize:9,padding:"2px 7px"}}>● {ms.minute}'</span>
+                </div>
               </div>
-              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
-                <span className="exo7" style={{fontSize:13}}>{m.h}</span>
-                <span className="exo7" style={{fontSize:10,color:"#6B6B80",background:"#1A1A2A",padding:"3px 8px",borderRadius:6}}>VS</span>
-                <span className="exo7" style={{fontSize:13}}>{m.a}</span>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                <div style={{flex:1}}>
+                  <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                    <span className="exo7" style={{fontSize:13}}>{m.h}</span>
+                    <div style={{textAlign:"center",flex:"0 0 60px"}}>
+                      <div className="exo" style={{fontSize:20,letterSpacing:2}}>
+                        <span style={{color:ms.hScore>ms.aScore?"#00D46A":"#F0F0F8"}}>{ms.hScore}</span>
+                        <span style={{color:"#3A3A4A",fontSize:14}}> – </span>
+                        <span style={{color:ms.aScore>ms.hScore?"#00D46A":"#F0F0F8"}}>{ms.aScore}</span>
+                      </div>
+                    </div>
+                    <span className="exo7" style={{fontSize:13}}>{m.a}</span>
+                  </div>
+                </div>
               </div>
-              <div style={{display:"flex",gap:6}}>
-                {["DOM","NUL","EXT"].map(o=>(
-                  <button key={o} className={`ob ${o.toLowerCase()} ${sel===o?"sel":""}`} onClick={()=>onToggle(m.id,o)}>{o}</button>
-                ))}
-              </div>
+              {sel ? (
+                <div style={{marginTop:8,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                  <div style={{fontSize:11,background:"rgba(245,166,35,.1)",border:"1px solid rgba(245,166,35,.3)",borderRadius:6,padding:"3px 10px",color:"#F5A623"}}>
+                    <span className="exo7">✓ {getSelLabel(m.id)}</span>
+                  </div>
+                  <span style={{fontSize:10,color:"#6B6B80"}}>Tap pour modifier →</span>
+                </div>
+              ) : (
+                <div style={{marginTop:8,display:"flex",justifyContent:"flex-end"}}>
+                  <span style={{fontSize:11,color:"#6B6B80"}}>Tap pour choisir votre scénario →</span>
+                </div>
+              )}
             </div>
           );
         })}
       </div>
+
       <div className="cbar">
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
-          <div style={{fontSize:12,color:"#6B6B80"}}><span className="exo7" style={{color:"#F0F0F8"}}>{count}</span>/10 sélections</div>
+          <div style={{fontSize:12,color:"#6B6B80"}}><span className="exo7" style={{color:"#F0F0F8"}}>{count}</span>/10 pronostics</div>
           <button onClick={onClear} style={{width:28,height:28,borderRadius:"50%",background:"#13131F",border:"1px solid #1E1E2E",cursor:"pointer",color:"#6B6B80",fontSize:16,display:"flex",alignItems:"center",justifyContent:"center"}}>↺</button>
         </div>
         <button className="btn btn-o" style={{opacity:canConfirm?1:.3,fontSize:12}} onClick={()=>canConfirm&&onConfirm()}>
-          {canConfirm?"🔥  CONFIRMER MON PARI — 10/10  →":"CONFIRMER MON PARI (MIN. 10 SCÉNARIOS)"}
+          {canConfirm?"🔥  CONFIRMER MON PARI — 10/10  →":"SÉLECTIONNEZ 10 MATCHS POUR CONTINUER"}
         </button>
       </div>
     </div>
   );
 }
 
-/* ── MISE ── */
+/* ══════════ MISE ══════════ */
 function MiseScreen({balance,selectedStake,setSelectedStake,onClose,onValidate}){
   const canPay=selectedStake!==null;
   return(
     <div className="scr on" style={{display:"flex",flexDirection:"column",justifyContent:"flex-end",background:"rgba(0,0,0,.88)"}}>
-      <div style={{background:"#0F0F1A",borderRadius:"24px 24px 0 0",borderTop:"1px solid #252535",padding:20,maxHeight:"91%",overflowY:"auto"}}>
+      <div style={{background:"#0F0F1A",borderRadius:"24px 24px 0 0",borderTop:"1px solid #252535",padding:20,maxHeight:"90%",overflowY:"auto"}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
           <div className="exo" style={{fontSize:20}}>Choisir votre mise</div>
           <button onClick={onClose} style={{background:"none",border:"none",color:"#6B6B80",fontSize:22,cursor:"pointer"}}>✕</button>
         </div>
         <div style={{fontSize:12,color:"#6B6B80",marginBottom:20}}>
-          Ticket : <span className="exo7" style={{color:"#00D46A"}}>10/10 sélections ✓</span>
-          {"   "}Solde : <span className="exo7" style={{color:"#F0F0F8"}}>{fmt(balance)} FCFA</span>
+          Ticket : <span className="exo7" style={{color:"#00D46A"}}>10/10 ✓</span>
+          {"   "}Solde : <span className="exo7">{fmt(balance)} FCFA</span>
         </div>
         {STAKES.map(s=>(
           <div key={s.a} className={`stk ${selectedStake?.a===s.a?"sel":""}`} onClick={()=>setSelectedStake(s)}>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
               <div>
                 <div className="exo7" style={{fontSize:15}}>{fmt(s.a)} <span style={{fontSize:11,color:"#6B6B80"}}>FCFA</span></div>
-                <div style={{fontSize:11,color:"#6B6B80"}}>Multiplicateur <span style={{color:"#F5A623"}}>x{s.m}</span></div>
+                <div style={{fontSize:11,color:"#6B6B80"}}>Mult. <span style={{color:"#F5A623"}}>x{s.m}</span></div>
               </div>
               <div style={{textAlign:"right"}}>
                 <div className="exo" style={{fontSize:18,color:"#F5A623"}}>{fmt(s.g)}</div>
@@ -385,13 +642,12 @@ function MiseScreen({balance,selectedStake,setSelectedStake,onClose,onValidate})
         ))}
         {selectedStake&&(
           <div style={{marginBottom:16,background:"rgba(245,166,35,.08)",borderRadius:14,padding:14,border:"1px solid rgba(245,166,35,.3)"}}>
-            <div className="exo7" style={{fontSize:10,color:"#6B6B80",letterSpacing:.8,marginBottom:8}}>⚡ RÉCAPITULATIF DU TICKET</div>
             <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
               <span style={{fontSize:13,color:"#6B6B80"}}>Mise</span>
               <span className="exo7" style={{fontSize:16}}>{fmt(selectedStake.a)} FCFA</span>
             </div>
             <div style={{display:"flex",justifyContent:"space-between"}}>
-              <span style={{fontSize:13,color:"#6B6B80"}}>Gain si 10/10 corrects</span>
+              <span style={{fontSize:13,color:"#6B6B80"}}>Gain potentiel</span>
               <span className="exo" style={{fontSize:16,color:"#F5A623"}}>{fmt(selectedStake.g)} FCFA</span>
             </div>
           </div>
@@ -402,7 +658,7 @@ function MiseScreen({balance,selectedStake,setSelectedStake,onClose,onValidate})
   );
 }
 
-/* ── SUCCESS ── */
+/* ══════════ SUCCESS ══════════ */
 function SuccessScreen({ticket,onViewBets,onNewBet}){
   if(!ticket)return null;
   return(
@@ -410,33 +666,26 @@ function SuccessScreen({ticket,onViewBets,onNewBet}){
       <div className="scale-in" style={{textAlign:"center",width:"100%"}}>
         <div style={{width:96,height:96,borderRadius:"50%",background:"rgba(0,212,106,.15)",border:"2px solid #00D46A",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 20px",fontSize:48,color:"#00D46A"}}>✓</div>
         <div className="exo" style={{fontSize:26,marginBottom:6}}>Ticket validé !</div>
-        <div style={{fontSize:14,color:"#6B6B80",marginBottom:28}}>Bonne chance pour vos 10 pronostics 🍀</div>
+        <div style={{fontSize:14,color:"#6B6B80",marginBottom:28}}>Bonne chance 🍀</div>
         <div className="card" style={{textAlign:"left",marginBottom:20}}>
           <div className="exo7" style={{fontSize:10,color:"#F5A623",letterSpacing:1,marginBottom:12}}>🎫 VOTRE TICKET</div>
-          <div style={{fontSize:12,color:"#6B6B80",marginBottom:12}}>Réf : {ticket.id}</div>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-            <div>
-              <div className="exo7" style={{fontSize:10,color:"#6B6B80"}}>MISE</div>
-              <div className="exo" style={{fontSize:20}}>{fmt(ticket.stake)} <span style={{fontSize:11,color:"#6B6B80"}}>FCFA</span></div>
-            </div>
-            <div>
-              <div className="exo7" style={{fontSize:10,color:"#6B6B80"}}>GAIN POTENTIEL</div>
-              <div className="exo" style={{fontSize:20,color:"#F5A623"}}>{fmt(ticket.gain)} <span style={{fontSize:11}}>FCFA</span></div>
-            </div>
+            <div><div className="exo7" style={{fontSize:10,color:"#6B6B80"}}>MISE</div><div className="exo" style={{fontSize:20}}>{fmt(ticket.stake)}<span style={{fontSize:11,color:"#6B6B80"}}> F</span></div></div>
+            <div><div className="exo7" style={{fontSize:10,color:"#6B6B80"}}>GAIN POTENTIEL</div><div className="exo" style={{fontSize:20,color:"#F5A623"}}>{fmt(ticket.gain)}<span style={{fontSize:11}}> F</span></div></div>
           </div>
         </div>
         <button className="btn btn-g" style={{marginBottom:10}} onClick={onViewBets}>Voir mes paris</button>
-        <button className="btn btn-ghost" onClick={onNewBet}>Faire un autre pari</button>
+        <button className="btn btn-ghost" onClick={onNewBet}>Nouveau pari</button>
       </div>
     </div>
   );
 }
 
-/* ── MES PARIS ── */
+/* ══════════ MES PARIS ══════════ */
 function MesParis({balance,tickets,filter,setFilter}){
   const filtered=filter==="all"?tickets:tickets.filter(t=>t.status===filter);
-  const statusMap={won:"bw",lost:"bl",pending:"bp"};
-  const statusLabel={won:"Gagné 🏆",lost:"Perdu ✗",pending:"En cours..."};
+  const sMap={won:"bw",lost:"bl",pending:"bp"};
+  const sLabel={won:"Gagné 🏆",lost:"Perdu ✗",pending:"En cours..."};
   return(
     <div className="scr on" style={{paddingBottom:80}}>
       <StatusBar balance={balance}/>
@@ -448,39 +697,25 @@ function MesParis({balance,tickets,filter,setFilter}){
             <button key={f.id} className={`tab-btn ${filter===f.id?"ac":""}`} onClick={()=>setFilter(f.id)}>{f.l}</button>
           ))}
         </div>
-        {filtered.length===0?(
-          <div style={{textAlign:"center",padding:"40px 0",color:"#6B6B80"}}>
-            <div style={{fontSize:40,marginBottom:10}}>🎫</div>
-            <div className="exo7" style={{fontSize:14}}>Aucun ticket</div>
-          </div>
-        ):filtered.map(t=>(
+        {filtered.map(t=>(
           <div key={t.id} className="card" style={{marginBottom:10,borderRadius:12}}>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
-              <div>
-                <div className="exo7" style={{fontSize:12,color:"#6B6B80"}}>{t.date}</div>
-                <div style={{fontSize:10,color:"#3A3A4A"}}>{t.id}</div>
-              </div>
-              <span className={`badge ${statusMap[t.status]}`}>{statusLabel[t.status]}</span>
+              <div><div className="exo7" style={{fontSize:12,color:"#6B6B80"}}>{t.date}</div></div>
+              <span className={`badge ${sMap[t.status]}`}>{sLabel[t.status]}</span>
             </div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,borderTop:"1px solid #1E1E2E",paddingTop:10}}>
-              <div>
-                <div className="exo7" style={{fontSize:10,color:"#6B6B80",marginBottom:3}}>MISE</div>
-                <div className="exo7" style={{fontSize:16}}>{fmt(t.stake)} <span style={{fontSize:10,color:"#6B6B80"}}>FCFA</span></div>
-              </div>
-              <div>
-                <div className="exo7" style={{fontSize:10,color:"#6B6B80",marginBottom:3}}>{t.status==="won"?"GAGNÉ":"POTENTIEL"}</div>
-                <div className="exo7" style={{fontSize:16,color:t.status==="won"?"#00D46A":"#F5A623"}}>{fmt(t.gain)} <span style={{fontSize:10}}>FCFA</span></div>
-              </div>
+              <div><div className="exo7" style={{fontSize:10,color:"#6B6B80",marginBottom:3}}>MISE</div><div className="exo7" style={{fontSize:16}}>{fmt(t.stake)} <span style={{fontSize:10,color:"#6B6B80"}}>F</span></div></div>
+              <div><div className="exo7" style={{fontSize:10,color:"#6B6B80",marginBottom:3}}>{t.status==="won"?"GAGNÉ":"POTENTIEL"}</div><div className="exo7" style={{fontSize:16,color:t.status==="won"?"#00D46A":"#F5A623"}}>{fmt(t.gain)} <span style={{fontSize:10}}>F</span></div></div>
             </div>
             {t.status==="pending"&&(
               <div style={{marginTop:10,background:"#0C0C16",borderRadius:8,padding:10,border:"1px solid #1E1E2E"}}>
-                <div className="exo7" style={{fontSize:10,color:"#6B6B80",marginBottom:5}}>PROGRESSION DU TICKET</div>
+                <div className="exo7" style={{fontSize:10,color:"#6B6B80",marginBottom:5}}>PROGRESSION</div>
                 <div style={{display:"flex",gap:3,marginBottom:5}}>
                   {Array(10).fill(0).map((_,i)=>(
-                    <div key={i} style={{flex:1,height:5,borderRadius:3,background:i<t.progress?"#F5A623":"#1E1E2E",transition:"background .2s"}}/>
+                    <div key={i} style={{flex:1,height:5,borderRadius:3,background:i<t.progress?"#F5A623":"#1E1E2E"}}/>
                   ))}
                 </div>
-                <div className="exo7 pulsing" style={{fontSize:11,color:"#F5A623"}}>{t.progress}/10 matchs joués</div>
+                <div className="exo7 pulsing" style={{fontSize:11,color:"#F5A623"}}>{t.progress}/10</div>
               </div>
             )}
           </div>
@@ -490,60 +725,46 @@ function MesParis({balance,tickets,filter,setFilter}){
   );
 }
 
-/* ── DEPOT ── */
+/* ══════════ DEPOT ══════════ */
 function DepotScreen({balance,notif,onDeposit}){
   const [amount,setAmount]=useState("");
   const [method,setMethod]=useState("wave");
   const amt=parseInt(amount);
   const canPay=!isNaN(amt)&&amt>=100;
   const methods=[
-    {id:"wave",label:"Wave",sub:"Transfert instantané",bg:"#0033AA",abbr:"W",tc:"#fff"},
-    {id:"orange",label:"Orange Money",sub:"Disponible 24h/24",bg:"#FF6200",abbr:"OM",tc:"#fff"},
+    {id:"wave",label:"Wave",sub:"Instantané",bg:"#0033AA",abbr:"W",tc:"#fff"},
+    {id:"orange",label:"Orange Money",sub:"24h/24",bg:"#FF6200",abbr:"OM",tc:"#fff"},
     {id:"mtn",label:"MTN MoMo",sub:"Mobile Money",bg:"#FFD600",abbr:"MTN",tc:"#000"},
   ];
   return(
     <div className="scr on" style={{paddingBottom:80}}>
       <StatusBar balance={balance}/>
-      {notif&&(
-        <div className="notif">
-          <div style={{width:32,height:32,borderRadius:"50%",background:"rgba(0,212,106,.15)",display:"flex",alignItems:"center",justifyContent:"center",color:"#00D46A",fontSize:18,flexShrink:0}}>✓</div>
-          <div>
-            <div className="exo7" style={{fontSize:13,color:"#00D46A"}}>Dépôt confirmé !</div>
-            <div style={{fontSize:11,color:"#6B6B80"}}>{notif}</div>
-          </div>
-        </div>
-      )}
+      {notif&&(<div className="notif"><div style={{width:32,height:32,borderRadius:"50%",background:"rgba(0,212,106,.15)",display:"flex",alignItems:"center",justifyContent:"center",color:"#00D46A",fontSize:18,flexShrink:0}}>✓</div><div><div className="exo7" style={{fontSize:13,color:"#00D46A"}}>Dépôt confirmé !</div><div style={{fontSize:11,color:"#6B6B80"}}>{notif}</div></div></div>)}
       <div style={{padding:16}}>
         <div className="exo" style={{fontSize:22,marginBottom:4}}>Dépôt</div>
         <div style={{fontSize:12,color:"#6B6B80",marginBottom:16}}>Rechargez votre portefeuille</div>
         <div className="card" style={{marginBottom:20,background:"#0F0F1A",borderColor:"#252535"}}>
           <div className="exo7" style={{fontSize:11,color:"#6B6B80",letterSpacing:.8,marginBottom:4}}>SOLDE ACTUEL</div>
-          <div style={{display:"flex",alignItems:"baseline",gap:6}}>
-            <span className="exo" style={{fontSize:32}}>{fmt(balance)}</span>
-            <span style={{fontSize:14,color:"#6B6B80"}}>FCFA</span>
-          </div>
+          <div style={{display:"flex",alignItems:"baseline",gap:6}}><span className="exo" style={{fontSize:32}}>{fmt(balance)}</span><span style={{fontSize:14,color:"#6B6B80"}}>FCFA</span></div>
         </div>
         <div style={{marginBottom:16}}>
-          <div className="exo7" style={{fontSize:11,color:"#6B6B80",letterSpacing:.8,marginBottom:8}}>MONTANT À DÉPOSER (FCFA)</div>
+          <div className="exo7" style={{fontSize:11,color:"#6B6B80",letterSpacing:.8,marginBottom:8}}>MONTANT (FCFA)</div>
           <input className="inp" type="number" placeholder="Ex: 5 000" value={amount} onChange={e=>setAmount(e.target.value)}/>
           <div style={{display:"flex",gap:6,marginTop:8}}>
             {[1000,2000,5000,10000].map(a=>(
-              <button key={a} onClick={()=>setAmount(String(a))} style={{flex:1,padding:"8px 0",borderRadius:8,border:`1px solid ${amount===String(a)?"#F5A623":"#252535"}`,background:amount===String(a)?"rgba(245,166,35,.1)":"#13131F",color:amount===String(a)?"#F5A623":"#F0F0F8",fontFamily:"'Exo 2',sans-serif",fontWeight:700,fontSize:11,cursor:"pointer",transition:"all .2s"}}>
+              <button key={a} onClick={()=>setAmount(String(a))} style={{flex:1,padding:"8px 0",borderRadius:8,border:`1px solid ${amount===String(a)?"#F5A623":"#252535"}`,background:amount===String(a)?"rgba(245,166,35,.1)":"#13131F",color:amount===String(a)?"#F5A623":"#F0F0F8",fontFamily:"'Exo 2',sans-serif",fontWeight:700,fontSize:11,cursor:"pointer"}}>
                 {fmt(a)}
               </button>
             ))}
           </div>
         </div>
         <div style={{marginBottom:20}}>
-          <div className="exo7" style={{fontSize:11,color:"#6B6B80",letterSpacing:.8,marginBottom:10}}>MÉTHODE DE PAIEMENT</div>
+          <div className="exo7" style={{fontSize:11,color:"#6B6B80",letterSpacing:.8,marginBottom:10}}>MÉTHODE</div>
           {methods.map(m=>(
             <div key={m.id} className={`dm ${method===m.id?"sel":""}`} onClick={()=>setMethod(m.id)}>
               <div style={{width:40,height:40,borderRadius:12,background:m.bg,display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:900,fontFamily:"'Exo 2',sans-serif",color:m.tc,flexShrink:0}}>{m.abbr}</div>
-              <div style={{flex:1}}>
-                <div style={{fontSize:14,fontWeight:600}}>{m.label}</div>
-                <div style={{fontSize:11,color:"#6B6B80"}}>{m.sub}</div>
-              </div>
-              {method===m.id&&<div className="exo7" style={{color:"#F5A623",marginLeft:"auto"}}>✓</div>}
+              <div style={{flex:1}}><div style={{fontSize:14,fontWeight:600}}>{m.label}</div><div style={{fontSize:11,color:"#6B6B80"}}>{m.sub}</div></div>
+              {method===m.id&&<div className="exo7" style={{color:"#F5A623"}}>✓</div>}
             </div>
           ))}
         </div>
@@ -553,7 +774,7 @@ function DepotScreen({balance,notif,onDeposit}){
   );
 }
 
-/* ── COMPTE ── */
+/* ══════════ COMPTE ══════════ */
 function CompteScreen({balance,tickets}){
   const won=tickets.filter(t=>t.status==="won").length;
   const rate=tickets.length>0?Math.round((won/tickets.length)*100):0;
@@ -569,26 +790,17 @@ function CompteScreen({balance,tickets}){
         </div>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:20}}>
           {[{v:tickets.length,l:"PARIS",c:"#F0F0F8"},{v:won,l:"GAGNÉS",c:"#00D46A"},{v:rate+"%",l:"WIN RATE",c:"#F5A623"}].map((s,i)=>(
-            <div key={i} className="card" style={{textAlign:"center",padding:10}}>
-              <div className="exo" style={{fontSize:20,color:s.c}}>{s.v}</div>
-              <div className="exo7" style={{fontSize:9,color:"#6B6B80"}}>{s.l}</div>
-            </div>
+            <div key={i} className="card" style={{textAlign:"center",padding:10}}><div className="exo" style={{fontSize:20,color:s.c}}>{s.v}</div><div className="exo7" style={{fontSize:9,color:"#6B6B80"}}>{s.l}</div></div>
           ))}
         </div>
         <div className="card" style={{marginBottom:16,background:"#0F0F1A",borderColor:"#252535"}}>
-          <div className="exo7" style={{fontSize:10,color:"#6B6B80",letterSpacing:.8,marginBottom:4}}>SOLDE DU PORTEFEUILLE</div>
-          <div style={{display:"flex",alignItems:"baseline",gap:6}}>
-            <span className="exo" style={{fontSize:26}}>{fmt(balance)}</span>
-            <span style={{fontSize:13,color:"#6B6B80"}}>FCFA</span>
-          </div>
+          <div className="exo7" style={{fontSize:10,color:"#6B6B80",letterSpacing:.8,marginBottom:4}}>SOLDE</div>
+          <div style={{display:"flex",alignItems:"baseline",gap:6}}><span className="exo" style={{fontSize:26}}>{fmt(balance)}</span><span style={{fontSize:13,color:"#6B6B80"}}>FCFA</span></div>
         </div>
         {[["💳","Retraits","Demander un retrait"],["📋","Historique","Tous vos tickets"],["🔔","Notifications","Alertes & résultats"],["🔒","Sécurité","PIN & 2FA"],["❓","Aide","FAQ & Support"]].map(([icon,label,sub])=>(
           <div key={label} className="menu-item">
             <div style={{width:36,height:36,background:"#1A1A2A",borderRadius:10,display:"flex",alignItems:"center",justifyContent:"center",fontSize:16}}>{icon}</div>
-            <div style={{flex:1}}>
-              <div style={{fontSize:14,fontWeight:600}}>{label}</div>
-              <div style={{fontSize:11,color:"#6B6B80"}}>{sub}</div>
-            </div>
+            <div style={{flex:1}}><div style={{fontSize:14,fontWeight:600}}>{label}</div><div style={{fontSize:11,color:"#6B6B80"}}>{sub}</div></div>
             <div style={{color:"#6B6B80",fontSize:18}}>›</div>
           </div>
         ))}
@@ -600,24 +812,93 @@ function CompteScreen({balance,tickets}){
             </div>
           ))}
         </div>
-        <div className="exo7" style={{textAlign:"center",marginTop:8,fontSize:10,color:"#252535"}}>Support disponible 7j/7 — 8h à 22h</div>
       </div>
     </div>
   );
 }
 
-/* ── ROOT APP ── */
+/* ══════════ ROOT APP ══════════ */
 function App(){
-  const [screen,setScreen]=useState("splash");
-  const [phone,setPhone]=useState("");
-  const [otp,setOtp]=useState(["","","","","",""]);
-  const [selections,setSelections]=useState({});
-  const [selectedStake,setSelectedStake]=useState(null);
-  const [balance,setBalance]=useState(12500);
-  const [tickets,setTickets]=useState(INIT_TICKETS);
-  const [ticketFilter,setTicketFilter]=useState("all");
-  const [successTicket,setSuccessTicket]=useState(null);
-  const [depotNotif,setDepotNotif]=useState(null);
+  const [screen, setScreen] = useState("splash");
+  const [phone,  setPhone]  = useState("");
+  const [otp,    setOtp]    = useState(["","","","","",""]);
+  const [selections,    setSelections]    = useState({});
+  const [selectedStake, setSelectedStake] = useState(null);
+  const [balance,       setBalance]       = useState(12500);
+  const [tickets,       setTickets]       = useState(INIT_TICKETS);
+  const [ticketFilter,  setTicketFilter]  = useState("all");
+  const [successTicket, setSuccessTicket] = useState(null);
+  const [depotNotif,    setDepotNotif]    = useState(null);
+  const [activeMatch,   setActiveMatch]   = useState(null); // match id for detail screen
+
+  /* ── LIVE MATCH STATES ── */
+  const initStates = () => {
+    const s = {};
+    MATCHES_DEF.forEach(m=>{
+      const ko = m.kickoff;
+      s[m.id] = {
+        minute:   ko,
+        hScore:   0,
+        aScore:   0,
+        posHome:  rnd(40,60),
+        posAway:  0,
+        shotsHome: rnd(0,3),
+        shotsAway: rnd(0,3),
+        cornersHome: rnd(0,4),
+        cornersAway: rnd(0,4),
+        events: [],
+      };
+      s[m.id].posAway = 100 - s[m.id].posHome;
+    });
+    return s;
+  };
+  const [matchStates, setMatchStates] = useState(initStates);
+
+  /* ── SIMULATION TICK (every 3 seconds = ~1 minute of match time) ── */
+  useEffect(()=>{
+    if(!["home","match"].includes(screen) && screen !== "home") return;
+    const tick = setInterval(()=>{
+      setMatchStates(prev=>{
+        const next = {...prev};
+        MATCHES_DEF.forEach(m=>{
+          const st = {...next[m.id]};
+          if(st.minute >= 90) return;
+          st.minute = Math.min(st.minute + 1, 90);
+          // Random goal every ~12 ticks (low probability)
+          if(Math.random() < 0.065) {
+            const isHome = Math.random() > 0.45;
+            if(isHome) st.hScore++;
+            else st.aScore++;
+            const names = isHome
+              ? ["Mbappé","Messi","Vitinha","Dembélé","Neymar","Hakimi"]
+              : ["Kane","Sané","Müller","Gnabry","Coman","Musiala"];
+            const team = isHome ? m.h : m.a;
+            const player = names[rnd(0,names.length-1)];
+            st.events = [...(st.events||[]), {min: st.minute, type:"goal", team, player}];
+            st.shotsHome += isHome ? rnd(1,2) : 0;
+            st.shotsAway += !isHome ? rnd(1,2) : 0;
+          }
+          // random shot
+          if(Math.random() < 0.15) {
+            if(Math.random()>.5) st.shotsHome++;
+            else st.shotsAway++;
+          }
+          // random corner
+          if(Math.random() < 0.08) {
+            if(Math.random()>.5) st.cornersHome++;
+            else st.cornersAway++;
+          }
+          // possession drift
+          const drift = rnd(-2,2);
+          st.posHome = Math.max(35, Math.min(65, st.posHome + drift));
+          st.posAway = 100 - st.posHome;
+          next[m.id] = st;
+        });
+        return next;
+      });
+    }, 2800);
+    return ()=>clearInterval(tick);
+  }, [screen]);
 
   useEffect(()=>{
     if(screen==="splash"){const t=setTimeout(()=>setScreen("login"),2300);return()=>clearTimeout(t);}
@@ -629,19 +910,20 @@ function App(){
     if(depotNotif){const t=setTimeout(()=>setDepotNotif(null),3200);return()=>clearTimeout(t);}
   },[depotNotif]);
 
-  const toggleSelection=(id,outcome)=>{
-    setSelections(prev=>{
-      const next={...prev};
-      if(next[id]===outcome){delete next[id];}
-      else if(!next[id]&&Object.keys(next).length>=10)return prev;
-      else next[id]=outcome;
-      return next;
-    });
+  const handleMatchClick = (matchId) => {
+    setActiveMatch(matchId);
+    setScreen("match");
   };
 
-  const validateTicket=()=>{
-    if(!selectedStake)return;
-    const newT={id:"TK-"+Date.now().toString().slice(-4),date:"16 Mar 2025",stake:selectedStake.a,gain:selectedStake.g,status:"pending",progress:2};
+  const handleParier = (matchId, sel) => {
+    setSelections(prev => ({...prev, [matchId]: sel}));
+    setScreen("home");
+    setActiveMatch(null);
+  };
+
+  const validateTicket = () => {
+    if(!selectedStake) return;
+    const newT={id:"TK-"+Date.now().toString().slice(-4),date:"16 Mar",stake:selectedStake.a,gain:selectedStake.g,status:"pending",progress:2};
     setSuccessTicket(newT);
     setTickets(prev=>[newT,...prev]);
     setBalance(prev=>prev-selectedStake.a);
@@ -650,27 +932,41 @@ function App(){
     setScreen("success");
   };
 
-  const handleDeposit=(amt)=>{
+  const handleDeposit = (amt) => {
     setBalance(prev=>prev+amt);
-    setDepotNotif("+"+fmt(amt)+" FCFA ajoutés au solde");
+    setDepotNotif("+"+fmt(amt)+" FCFA ajoutés");
   };
 
-  const mainScreens=["home","paris","depot","compte"];
-  const go=s=>setScreen(s);
+  const mainScreens = ["home","paris","depot","compte"];
+  const go = s => { setActiveMatch(null); setScreen(s); };
+
+  const activeMatchDef = activeMatch ? MATCHES_DEF.find(m=>m.id===activeMatch) : null;
+  const activeMatchState = activeMatch ? matchStates[activeMatch] : null;
 
   return(
     <div className="phone-wrap">
       <div id="ph">
-        {screen==="splash"  &&<SplashScreen/>}
-        {screen==="login"   &&<LoginScreen phone={phone} setPhone={setPhone} onSendOtp={()=>setScreen("otp")}/>}
-        {screen==="otp"     &&<OtpScreen phone={phone} otp={otp} setOtp={setOtp} onVerify={()=>setScreen("home")} onBack={()=>setScreen("login")}/>}
-        {screen==="home"    &&<HomeScreen balance={balance} selections={selections} onToggle={toggleSelection} onClear={()=>setSelections({})} onConfirm={()=>setScreen("mise")}/>}
-        {screen==="mise"    &&<MiseScreen balance={balance} selectedStake={selectedStake} setSelectedStake={setSelectedStake} onClose={()=>setScreen("home")} onValidate={validateTicket}/>}
-        {screen==="success" &&<SuccessScreen ticket={successTicket} onViewBets={()=>setScreen("paris")} onNewBet={()=>{setSelections({});setScreen("home");}}/>}
-        {screen==="paris"   &&<MesParis balance={balance} tickets={tickets} filter={ticketFilter} setFilter={setTicketFilter}/>}
-        {screen==="depot"   &&<DepotScreen balance={balance} notif={depotNotif} onDeposit={handleDeposit}/>}
-        {screen==="compte"  &&<CompteScreen balance={balance} tickets={tickets}/>}
-        {mainScreens.includes(screen)&&<BottomNav screen={screen} onNav={go}/>}
+        {screen==="splash"  && <SplashScreen/>}
+        {screen==="login"   && <LoginScreen phone={phone} setPhone={setPhone} onSendOtp={()=>setScreen("otp")}/>}
+        {screen==="otp"     && <OtpScreen phone={phone} otp={otp} setOtp={setOtp} onVerify={()=>setScreen("home")} onBack={()=>setScreen("login")}/>}
+        {screen==="home"    && <HomeScreen balance={balance} selections={selections} matchStates={matchStates} onMatchClick={handleMatchClick} onClear={()=>setSelections({})} onConfirm={()=>setScreen("mise")}/>}
+        {screen==="mise"    && <MiseScreen balance={balance} selectedStake={selectedStake} setSelectedStake={setSelectedStake} onClose={()=>setScreen("home")} onValidate={validateTicket}/>}
+        {screen==="success" && <SuccessScreen ticket={successTicket} onViewBets={()=>setScreen("paris")} onNewBet={()=>{setSelections({});setScreen("home");}}/>}
+        {screen==="paris"   && <MesParis balance={balance} tickets={tickets} filter={ticketFilter} setFilter={setTicketFilter}/>}
+        {screen==="depot"   && <DepotScreen balance={balance} notif={depotNotif} onDeposit={handleDeposit}/>}
+        {screen==="compte"  && <CompteScreen balance={balance} tickets={tickets}/>}
+        {mainScreens.includes(screen) && <BottomNav screen={screen} onNav={go}/>}
+
+        {/* Match detail overlay */}
+        {activeMatchDef && activeMatchState && (
+          <MatchDetail
+            match={activeMatchDef}
+            matchState={activeMatchState}
+            currentSel={selections[activeMatch] || null}
+            onBack={()=>{setScreen("home");setActiveMatch(null);}}
+            onParier={handleParier}
+          />
+        )}
       </div>
     </div>
   );
