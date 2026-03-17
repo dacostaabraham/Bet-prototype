@@ -179,9 +179,48 @@ const STAKES = [
   {a:1000,g:85000,m:85},{a:2000,g:150000,m:75},{a:5000,g:300000,m:60},{a:10000,g:500000,m:50},
 ];
 const INIT_TICKETS = [
-  {id:"TK-2025-001",date:"14 Mar",stake:500,gain:50000,status:"won",progress:10},
-  {id:"TK-2025-002",date:"15 Mar",stake:1000,gain:85000,status:"lost",progress:10},
-  {id:"TK-2025-003",date:"16 Mar",stake:200,gain:25000,status:"pending",progress:7},
+  {id:"TK-2025-001",date:"14 Mar",stake:500,gain:50000,status:"won",progress:10,
+   lines:[
+     {matchName:"PSG vs Bayern",mktLabel:"Résultat final",optLabel:"PSG"},
+     {matchName:"Man City vs Real Madrid",mktLabel:"Résultat final",optLabel:"Nul"},
+     {matchName:"Barcelona vs Inter",mktLabel:"BTTS",optLabel:"OUI"},
+     {matchName:"Liverpool vs Dortmund",mktLabel:"Total buts",optLabel:"+ 2.5"},
+     {matchName:"Atletico vs Porto",mktLabel:"Résultat final",optLabel:"Atletico"},
+     {matchName:"Arsenal vs Napoli",mktLabel:"Double chance",optLabel:"1 ou X"},
+     {matchName:"Roma vs Ajax",mktLabel:"Résultat final",optLabel:"Nul"},
+     {matchName:"Juventus vs Benfica",mktLabel:"Total buts",optLabel:"− 2.5"},
+     {matchName:"Chelsea vs Shakhtar",mktLabel:"Résultat final",optLabel:"Chelsea"},
+     {matchName:"AC Milan vs PSV",mktLabel:"Double chance",optLabel:"1 ou 2"},
+   ]
+  },
+  {id:"TK-2025-002",date:"15 Mar",stake:1000,gain:85000,status:"lost",progress:10,
+   lines:[
+     {matchName:"PSG vs Bayern",mktLabel:"Résultat final",optLabel:"Bayern"},
+     {matchName:"Man City vs Real Madrid",mktLabel:"BTTS",optLabel:"OUI"},
+     {matchName:"Barcelona vs Inter",mktLabel:"Résultat final",optLabel:"Barcelona"},
+     {matchName:"Liverpool vs Dortmund",mktLabel:"Score exact",optLabel:"1 – 0"},
+     {matchName:"Atletico vs Porto",mktLabel:"Double chance",optLabel:"X ou 2"},
+     {matchName:"Arsenal vs Napoli",mktLabel:"Résultat final",optLabel:"Arsenal"},
+     {matchName:"Roma vs Ajax",mktLabel:"Total buts",optLabel:"+ 2.5"},
+     {matchName:"Juventus vs Benfica",mktLabel:"Résultat final",optLabel:"Juventus"},
+     {matchName:"Chelsea vs Shakhtar",mktLabel:"BTTS",optLabel:"NON"},
+     {matchName:"AC Milan vs PSV",mktLabel:"Résultat final",optLabel:"AC Milan"},
+   ]
+  },
+  {id:"TK-2025-003",date:"16 Mar",stake:200,gain:25000,status:"pending",progress:7,
+   lines:[
+     {matchName:"PSG vs Bayern",mktLabel:"Résultat final",optLabel:"PSG"},
+     {matchName:"PSG vs Bayern",mktLabel:"BTTS",optLabel:"OUI"},
+     {matchName:"Man City vs Real Madrid",mktLabel:"Résultat final",optLabel:"Man City"},
+     {matchName:"Barcelona vs Inter",mktLabel:"Total buts",optLabel:"+ 2.5"},
+     {matchName:"Liverpool vs Dortmund",mktLabel:"Double chance",optLabel:"1 ou X"},
+     {matchName:"Atletico vs Porto",mktLabel:"Résultat final",optLabel:"Nul"},
+     {matchName:"Arsenal vs Napoli",mktLabel:"BTTS",optLabel:"OUI"},
+     {matchName:"Roma vs Ajax",mktLabel:"Score exact",optLabel:"1 – 1"},
+     {matchName:"Juventus vs Benfica",mktLabel:"Résultat final",optLabel:"Nul"},
+     {matchName:"Chelsea vs Shakhtar",mktLabel:"Total buts",optLabel:"− 2.5"},
+   ]
+  },
 ];
 
 /* ══════════ HELPERS ══════════ */
@@ -380,22 +419,28 @@ function OtpScreen({phone,otp,setOtp,onVerify,onBack}){
 }
 
 /* ══════════ MATCH DETAIL SCREEN ══════════ */
-function MatchDetail({match, matchState, onBack, onParier, currentSel}){
-  // tempSel = { [marketId]: optionKey } — une sélection par marché, plusieurs marchés possibles
+function MatchDetail({match, matchState, onBack, onParier, currentSel, usedSlots}){
+  // currentSel = {[marketId]: optionKey} for THIS match only
   const [tempSel, setTempSel] = useState(currentSel || {});
   const ms = matchState;
   const markets = buildMarkets({...ms, homeName: match.h, awayName: match.a});
   const selCount = Object.keys(tempSel).length;
   const hasSelection = selCount > 0;
+  // slots used by OTHER matches
+  const otherCount = usedSlots;
+  // how many NEW slots we can still add
+  const slotsLeft = 10 - otherCount - selCount;
+  const totalAfter = otherCount + selCount;
 
   const handleSelect = (marketId, optionKey) => {
     setTempSel(prev => {
       const next = {...prev};
       if(next[marketId] === optionKey) {
-        // même option → désélectionner ce marché
         delete next[marketId];
       } else {
-        // nouvelle option ou autre marché → sélectionner
+        // check if we'd exceed 10 total
+        const wouldAdd = !next[marketId]; // true if new market (not replacing)
+        if(wouldAdd && otherCount + Object.keys(next).length >= 10) return prev; // cap
         next[marketId] = optionKey;
       }
       return next;
@@ -406,7 +451,11 @@ function MatchDetail({match, matchState, onBack, onParier, currentSel}){
     return Object.entries(tempSel).map(([mid, okey]) => {
       const mkt = markets.find(m=>m.id===mid);
       const opt = mkt?.opts.find(o=>o.k===okey);
-      return { mktLabel: mkt?.label || "", optLabel: opt?.lbl || "" };
+      return {
+        mktLabel: mkt?.label?.replace(/^[^ ]+ /,"") || "",
+        optLabel: opt?.lbl || okey,
+        color: mkt?.color || ""
+      };
     });
   };
 
@@ -420,7 +469,12 @@ function MatchDetail({match, matchState, onBack, onParier, currentSel}){
             <div className="exo7" style={{fontSize:13}}>{match.h} vs {match.a}</div>
             <div style={{fontSize:11,color:"#6B6B80"}}>{match.lg}</div>
           </div>
-          <span className="badge blive">● LIVE</span>
+          <div style={{textAlign:"right"}}>
+            <div className="exo7" style={{fontSize:12,color: totalAfter===10?"#00D46A": slotsLeft===0?"#EF4444":"#F5A623"}}>
+              {totalAfter}/10
+            </div>
+            <div style={{fontSize:9,color:"#6B6B80"}}>sélections</div>
+          </div>
         </div>
 
         {/* Live Score */}
@@ -484,11 +538,23 @@ function MatchDetail({match, matchState, onBack, onParier, currentSel}){
         <div style={{padding:"0 12px"}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
             <div className="exo7" style={{fontSize:11,color:"#F5A623",letterSpacing:1,textTransform:"uppercase"}}>CHOISIR VOS SCÉNARIOS</div>
-            {hasSelection && (
-              <div style={{background:"rgba(0,212,106,.1)",border:"1px solid rgba(0,212,106,.3)",borderRadius:20,padding:"2px 10px"}}>
-                <span className="exo7" style={{fontSize:11,color:"#00D46A"}}>{selCount} sélectionné{selCount>1?"s":""}</span>
-              </div>
-            )}
+            <div style={{display:"flex",gap:6,alignItems:"center"}}>
+              {hasSelection && (
+                <div style={{background:"rgba(0,212,106,.1)",border:"1px solid rgba(0,212,106,.3)",borderRadius:20,padding:"2px 10px"}}>
+                  <span className="exo7" style={{fontSize:11,color:"#00D46A"}}>{selCount} ✓</span>
+                </div>
+              )}
+              {slotsLeft > 0 && otherCount + selCount < 10 && (
+                <div style={{background:"rgba(245,166,35,.08)",border:"1px solid rgba(245,166,35,.2)",borderRadius:20,padding:"2px 10px"}}>
+                  <span style={{fontSize:10,color:"#F5A623"}}>{slotsLeft} slot{slotsLeft>1?"s":""} libre{slotsLeft>1?"s":""}</span>
+                </div>
+              )}
+              {otherCount + selCount >= 10 && !hasSelection && (
+                <div style={{background:"rgba(239,68,68,.08)",border:"1px solid rgba(239,68,68,.2)",borderRadius:20,padding:"2px 10px"}}>
+                  <span style={{fontSize:10,color:"#EF4444"}}>Ticket complet</span>
+                </div>
+              )}
+            </div>
           </div>
           {markets.map(mkt=>(
             <div key={mkt.id} className="market-block" style={{borderColor: tempSel[mkt.id] ? "rgba(245,166,35,.4)" : "#1E1E2E", background: tempSel[mkt.id] ? "rgba(245,166,35,.04)" : "#13131F"}}>
@@ -516,15 +582,27 @@ function MatchDetail({match, matchState, onBack, onParier, currentSel}){
 
       {/* PARIER BUTTON fixed at bottom */}
       <div style={{position:"absolute",bottom:0,left:0,right:0,padding:"12px 16px 20px",background:"rgba(12,12,22,.97)",borderTop:"1px solid #1E1E2E"}}>
+        {/* global dots strip */}
+        <div style={{display:"flex",gap:4,justifyContent:"center",marginBottom:10}}>
+          {Array(10).fill(0).map((_,i)=>{
+            const filled = i < otherCount || i < totalAfter;
+            const isNew  = i >= otherCount && i < totalAfter;
+            return(
+              <div key={i} style={{width:20,height:6,borderRadius:3,
+                background: isNew ? "#00D46A" : filled ? "#F5A623" : "#1E1E2E",
+                transition:"background .2s"}}/>
+            );
+          })}
+        </div>
         {hasSelection && (
           <div style={{background:"rgba(245,166,35,.06)",borderRadius:10,padding:"10px 12px",marginBottom:10,border:"1px solid rgba(245,166,35,.25)"}}>
             <div className="exo7" style={{fontSize:10,color:"#F5A623",marginBottom:7,letterSpacing:.5}}>
-              MES SCÉNARIOS ({selCount})
+              MES SCÉNARIOS SUR CE MATCH ({selCount})
             </div>
             <div style={{display:"flex",flexWrap:"wrap",gap:5}}>
               {getSelSummary().map((s,i)=>(
                 <div key={i} style={{background:"rgba(245,166,35,.12)",border:"1px solid rgba(245,166,35,.3)",borderRadius:6,padding:"3px 8px",display:"flex",alignItems:"center",gap:4}}>
-                  <span style={{fontSize:10,color:"#6B6B80"}}>{s.mktLabel.replace(/^[^ ]+ /,"")}</span>
+                  <span style={{fontSize:10,color:"#6B6B80"}}>{s.mktLabel}</span>
                   <span style={{fontSize:10,color:"#6B6B80"}}>→</span>
                   <span className="exo7" style={{fontSize:11,color:"#F5A623"}}>{s.optLabel}</span>
                 </div>
@@ -535,7 +613,7 @@ function MatchDetail({match, matchState, onBack, onParier, currentSel}){
         <button
           className={`btn-parier ${hasSelection?"ready":""}`}
           disabled={!hasSelection}
-          onClick={()=>hasSelection && onParier(match.id, tempSel)}>
+          onClick={()=>hasSelection && onParier(match.id, tempSel, markets)}>
           PARIER {hasSelection ? `(${selCount} scénario${selCount>1?"s":""})` : ""}
         </button>
       </div>
@@ -545,22 +623,13 @@ function MatchDetail({match, matchState, onBack, onParier, currentSel}){
 
 /* ══════════ HOME SCREEN ══════════ */
 function HomeScreen({balance, selections, matchStates, onMatchClick, onClear, onConfirm}){
-  const count = Object.keys(selections).length;
+  const count = selections.length; // total flat scenarios
   const canConfirm = count === 10;
   const TICKER="🏆 JACKPOT DU JOUR (FOOTBALL)  •  10 PRONOSTICS  •  GAINS JUSQU'À 500 000 FCFA  •  MATCHS EN DIRECT  •  ";
 
-  const getSelLabels = (matchId) => {
-    const selMap = selections[matchId]; // { [marketId]: optionKey }
-    if(!selMap || Object.keys(selMap).length === 0) return [];
-    const ms = matchStates[matchId];
-    const matchDef = MATCHES_DEF.find(x=>x.id===matchId);
-    const mkts = buildMarkets({...ms, homeName: matchDef?.h||"", awayName: matchDef?.a||""});
-    return Object.entries(selMap).map(([mid, okey]) => {
-      const mkt = mkts.find(m=>m.id===mid);
-      const opt = mkt?.opts.find(o=>o.k===okey);
-      return opt?.lbl || okey;
-    });
-  };
+  // Labels pour un match donné depuis le tableau plat
+  const getSelLabels = (matchId) => selections.filter(s=>s.matchId===matchId).map(s=>s.optLabel);
+  const getMatchSelCount = (matchId) => selections.filter(s=>s.matchId===matchId).length;
 
   return(
     <div className="scr on" style={{paddingBottom:80}}>
@@ -586,8 +655,8 @@ function HomeScreen({balance, selections, matchStates, onMatchClick, onClear, on
       <div style={{padding:"0 12px"}}>
         {MATCHES_DEF.map(m=>{
           const ms = matchStates[m.id];
-          const sel = selections[m.id]; // { [marketId]: optionKey } or undefined
-          const hasMatchSel = sel && Object.keys(sel).length > 0;
+          const matchSelCount = getMatchSelCount(m.id);
+          const hasMatchSel = matchSelCount > 0;
           const liveProgress = Math.min(ms.minute/90*100, 100);
           return(
             <div key={m.id} className={`mcard ${hasMatchSel?"selected":""}`} onClick={()=>onMatchClick(m.id)}>
@@ -622,7 +691,7 @@ function HomeScreen({balance, selections, matchStates, onMatchClick, onClear, on
                       </span>
                     ))}
                   </div>
-                  <span style={{fontSize:10,color:"#6B6B80"}}>{Object.keys(sel).length} scénario{Object.keys(sel).length>1?"s":""} · Tap pour modifier →</span>
+                  <span style={{fontSize:10,color:"#6B6B80"}}>{matchSelCount} scénario{matchSelCount>1?"s":""} · Tap pour modifier →</span>
                 </div>
               ) : (
                 <div style={{marginTop:8,display:"flex",justifyContent:"flex-end"}}>
@@ -718,9 +787,11 @@ function SuccessScreen({ticket,onViewBets,onNewBet}){
 
 /* ══════════ MES PARIS ══════════ */
 function MesParis({balance,tickets,filter,setFilter}){
+  const [expandedId, setExpandedId] = useState(null);
   const filtered=filter==="all"?tickets:tickets.filter(t=>t.status===filter);
   const sMap={won:"bw",lost:"bl",pending:"bp"};
   const sLabel={won:"Gagné 🏆",lost:"Perdu ✗",pending:"En cours..."};
+  const statusIcon={won:"#00D46A",lost:"#EF4444",pending:"#F5A623"};
   return(
     <div className="scr on" style={{paddingBottom:80}}>
       <StatusBar balance={balance}/>
@@ -732,29 +803,113 @@ function MesParis({balance,tickets,filter,setFilter}){
             <button key={f.id} className={`tab-btn ${filter===f.id?"ac":""}`} onClick={()=>setFilter(f.id)}>{f.l}</button>
           ))}
         </div>
-        {filtered.map(t=>(
-          <div key={t.id} className="card" style={{marginBottom:10,borderRadius:12}}>
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
-              <div><div className="exo7" style={{fontSize:12,color:"#6B6B80"}}>{t.date}</div></div>
-              <span className={`badge ${sMap[t.status]}`}>{sLabel[t.status]}</span>
-            </div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,borderTop:"1px solid #1E1E2E",paddingTop:10}}>
-              <div><div className="exo7" style={{fontSize:10,color:"#6B6B80",marginBottom:3}}>MISE</div><div className="exo7" style={{fontSize:16}}>{fmt(t.stake)} <span style={{fontSize:10,color:"#6B6B80"}}>F</span></div></div>
-              <div><div className="exo7" style={{fontSize:10,color:"#6B6B80",marginBottom:3}}>{t.status==="won"?"GAGNÉ":"POTENTIEL"}</div><div className="exo7" style={{fontSize:16,color:t.status==="won"?"#00D46A":"#F5A623"}}>{fmt(t.gain)} <span style={{fontSize:10}}>F</span></div></div>
-            </div>
-            {t.status==="pending"&&(
-              <div style={{marginTop:10,background:"#0C0C16",borderRadius:8,padding:10,border:"1px solid #1E1E2E"}}>
-                <div className="exo7" style={{fontSize:10,color:"#6B6B80",marginBottom:5}}>PROGRESSION</div>
-                <div style={{display:"flex",gap:3,marginBottom:5}}>
-                  {Array(10).fill(0).map((_,i)=>(
-                    <div key={i} style={{flex:1,height:5,borderRadius:3,background:i<t.progress?"#F5A623":"#1E1E2E"}}/>
-                  ))}
-                </div>
-                <div className="exo7 pulsing" style={{fontSize:11,color:"#F5A623"}}>{t.progress}/10</div>
-              </div>
-            )}
+        {filtered.length===0&&(
+          <div style={{textAlign:"center",padding:"40px 0",color:"#6B6B80"}}>
+            <div style={{fontSize:36,marginBottom:8}}>🎫</div>
+            <div className="exo7" style={{fontSize:14}}>Aucun ticket</div>
           </div>
-        ))}
+        )}
+        {filtered.map(t=>{
+          const isExpanded = expandedId===t.id;
+          return(
+            <div key={t.id} className="card" style={{marginBottom:10,borderRadius:14,padding:0,overflow:"hidden"}}>
+              {/* Header */}
+              <div style={{padding:"12px 14px",cursor:"pointer"}} onClick={()=>setExpandedId(isExpanded?null:t.id)}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
+                  <div>
+                    <div className="exo7" style={{fontSize:12,color:"#6B6B80"}}>{t.date}</div>
+                    <div style={{fontSize:10,color:"#2A2A3A"}}>{t.id}</div>
+                  </div>
+                  <div style={{display:"flex",alignItems:"center",gap:8}}>
+                    <span className={`badge ${sMap[t.status]}`}>{sLabel[t.status]}</span>
+                    <span style={{color:"#6B6B80",fontSize:16,transition:"transform .2s",display:"inline-block",transform:isExpanded?"rotate(90deg)":"rotate(0deg)"}}>›</span>
+                  </div>
+                </div>
+                {/* Mise / Gain */}
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,borderTop:"1px solid #1E1E2E",paddingTop:10}}>
+                  <div>
+                    <div className="exo7" style={{fontSize:10,color:"#6B6B80",marginBottom:3}}>MISE</div>
+                    <div className="exo7" style={{fontSize:16}}>{fmt(t.stake)} <span style={{fontSize:10,color:"#6B6B80"}}>F</span></div>
+                  </div>
+                  <div>
+                    <div className="exo7" style={{fontSize:10,color:"#6B6B80",marginBottom:3}}>{t.status==="won"?"GAGNÉ":"POTENTIEL"}</div>
+                    <div className="exo7" style={{fontSize:16,color:t.status==="won"?"#00D46A":"#F5A623"}}>{fmt(t.gain)} <span style={{fontSize:10}}>F</span></div>
+                  </div>
+                </div>
+                {/* Progression bar pour pending */}
+                {t.status==="pending"&&(
+                  <div style={{marginTop:10,background:"#0C0C16",borderRadius:8,padding:"8px 10px",border:"1px solid #1E1E2E"}}>
+                    <div className="exo7" style={{fontSize:10,color:"#6B6B80",marginBottom:5}}>PROGRESSION DU TICKET</div>
+                    <div style={{display:"flex",gap:3,marginBottom:4}}>
+                      {Array(10).fill(0).map((_,i)=>(
+                        <div key={i} style={{flex:1,height:5,borderRadius:3,background:i<t.progress?"#F5A623":"#1E1E2E"}}/>
+                      ))}
+                    </div>
+                    <div className="exo7 pulsing" style={{fontSize:11,color:"#F5A623"}}>{t.progress}/10 matchs joués</div>
+                  </div>
+                )}
+                {/* Mini chips résumé quand replié */}
+                {!isExpanded && t.lines && (
+                  <div style={{marginTop:8,display:"flex",flexWrap:"wrap",gap:4}}>
+                    {t.lines.slice(0,3).map((l,i)=>(
+                      <span key={i} style={{fontSize:9,background:"rgba(245,166,35,.08)",border:"1px solid rgba(245,166,35,.2)",borderRadius:4,padding:"2px 6px",color:"#F5A623",fontFamily:"'Exo 2',sans-serif",fontWeight:700}}>
+                        {l.optLabel}
+                      </span>
+                    ))}
+                    {t.lines.length>3&&(
+                      <span style={{fontSize:9,color:"#6B6B80",padding:"2px 4px"}}>+{t.lines.length-3} scénarios</span>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* DÉTAIL EXPANDABLE — les 10 lignes du ticket */}
+              {isExpanded && t.lines && (
+                <div style={{borderTop:"1px solid #1E1E2E",background:"#0C0C16"}}>
+                  <div style={{padding:"10px 14px 4px"}}>
+                    <div className="exo7" style={{fontSize:10,color:"#F5A623",letterSpacing:.8,marginBottom:8}}>
+                      DÉTAIL DU TICKET — {t.lines.length} SCÉNARIO{t.lines.length>1?"S":""}
+                    </div>
+                    {t.lines.map((line,i)=>{
+                      // simulate result for won/lost tickets
+                      const isWon = t.status==="won";
+                      const isLost = t.status==="lost";
+                      const isPending = t.status==="pending";
+                      const lineWon = isWon || (isPending && i < t.progress);
+                      const lineLost = isLost && i >= Math.floor(t.lines.length*0.6);
+                      const linePending = isPending && i >= t.progress;
+                      return(
+                        <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"7px 0",borderBottom:i<t.lines.length-1?"1px solid rgba(30,30,46,.6)":"none"}}>
+                          {/* Status dot */}
+                          <div style={{width:20,height:20,borderRadius:"50%",flexShrink:0,
+                            background: lineWon?"rgba(0,212,106,.15)":lineLost?"rgba(239,68,68,.15)":"rgba(245,166,35,.1)",
+                            border:`1.5px solid ${lineWon?"#00D46A":lineLost?"#EF4444":"rgba(245,166,35,.3)"}`,
+                            display:"flex",alignItems:"center",justifyContent:"center",fontSize:10}}>
+                            {lineWon?"✓":lineLost?"✗":linePending?"·":"·"}
+                          </div>
+                          <div style={{flex:1,minWidth:0}}>
+                            <div style={{fontSize:11,color:"#9090A0",marginBottom:1,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{line.matchName}</div>
+                            <div style={{display:"flex",gap:5,alignItems:"center"}}>
+                              <span style={{fontSize:10,color:"#4A4A60"}}>{line.mktLabel}</span>
+                              <span style={{fontSize:10,color:"#4A4A60"}}>→</span>
+                              <span className="exo7" style={{fontSize:12,color: lineWon?"#00D46A":lineLost?"#EF4444":"#F5A623"}}>{line.optLabel}</span>
+                            </div>
+                          </div>
+                          <div style={{fontSize:9,color: lineWon?"#00D46A":lineLost?"#EF4444":"#6B6B80",fontFamily:"'Exo 2',sans-serif",fontWeight:700,textTransform:"uppercase"}}>
+                            {lineWon?"✓ OK":lineLost?"✗ RATÉ":linePending?"⏳ LIVE":"—"}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <div style={{padding:"8px 14px 12px",textAlign:"center"}}>
+                    <span style={{fontSize:11,color:"#6B6B80",cursor:"pointer"}} onClick={()=>setExpandedId(null)}>▲ Réduire</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -857,7 +1012,9 @@ function App(){
   const [screen, setScreen] = useState("splash");
   const [phone,  setPhone]  = useState("");
   const [otp,    setOtp]    = useState(["","","","","",""]);
-  const [selections,    setSelections]    = useState({});
+  // selections = flat array of up to 10 items:
+  // { matchId, marketId, optionKey, matchName, mktLabel, optLabel }
+  const [selections,    setSelections]    = useState([]);
   const [selectedStake, setSelectedStake] = useState(null);
   const [balance,       setBalance]       = useState(12500);
   const [tickets,       setTickets]       = useState(INIT_TICKETS);
@@ -950,19 +1107,49 @@ function App(){
     setScreen("match");
   };
 
-  const handleParier = (matchId, sel) => {
-    setSelections(prev => ({...prev, [matchId]: sel}));
+  const handleParier = (matchId, selMap, markets) => {
+    // selMap = { [marketId]: optionKey }
+    const matchDef = MATCHES_DEF.find(m=>m.id===matchId);
+    const newItems = Object.entries(selMap).map(([mid, okey]) => {
+      const mkt = markets.find(m=>m.id===mid);
+      const opt = mkt?.opts.find(o=>o.k===okey);
+      return {
+        matchId,
+        marketId: mid,
+        optionKey: okey,
+        matchName: `${matchDef?.h} vs ${matchDef?.a}`,
+        mktLabel:  mkt?.label?.replace(/^[^ ]+ /,"") || mid,
+        optLabel:  opt?.lbl || okey,
+      };
+    });
+    setSelections(prev => {
+      // remove existing items for this matchId, then add new ones
+      const others = prev.filter(s => s.matchId !== matchId);
+      return [...others, ...newItems].slice(0,10);
+    });
     setScreen("home");
     setActiveMatch(null);
   };
 
   const validateTicket = () => {
     if(!selectedStake) return;
-    const newT={id:"TK-"+Date.now().toString().slice(-4),date:"16 Mar",stake:selectedStake.a,gain:selectedStake.g,status:"pending",progress:2};
+    const newT = {
+      id: "TK-"+Date.now().toString().slice(-4),
+      date: "16 Mar",
+      stake: selectedStake.a,
+      gain:  selectedStake.g,
+      status: "pending",
+      progress: 2,
+      lines: selections.map(s => ({
+        matchName: s.matchName,
+        mktLabel:  s.mktLabel,
+        optLabel:  s.optLabel,
+      }))
+    };
     setSuccessTicket(newT);
     setTickets(prev=>[newT,...prev]);
     setBalance(prev=>prev-selectedStake.a);
-    setSelections({});
+    setSelections([]);
     setSelectedStake(null);
     setScreen("success");
   };
@@ -977,6 +1164,11 @@ function App(){
 
   const activeMatchDef = activeMatch ? MATCHES_DEF.find(m=>m.id===activeMatch) : null;
   const activeMatchState = activeMatch ? matchStates[activeMatch] : null;
+  // Convert flat selections for this match to {[marketId]: optionKey} map for MatchDetail
+  const activeMatchSelMap = activeMatch
+    ? Object.fromEntries(selections.filter(s=>s.matchId===activeMatch).map(s=>[s.marketId, s.optionKey]))
+    : {};
+  const usedByOthers = activeMatch ? selections.filter(s=>s.matchId!==activeMatch).length : 0;
 
   return(
     <div className="phone-wrap">
@@ -984,20 +1176,20 @@ function App(){
         {screen==="splash"  && <SplashScreen/>}
         {screen==="login"   && <LoginScreen phone={phone} setPhone={setPhone} onSendOtp={()=>setScreen("otp")}/>}
         {screen==="otp"     && <OtpScreen phone={phone} otp={otp} setOtp={setOtp} onVerify={()=>setScreen("home")} onBack={()=>setScreen("login")}/>}
-        {screen==="home"    && <HomeScreen balance={balance} selections={selections} matchStates={matchStates} onMatchClick={handleMatchClick} onClear={()=>setSelections({})} onConfirm={()=>setScreen("mise")}/>}
+        {screen==="home"    && <HomeScreen balance={balance} selections={selections} matchStates={matchStates} onMatchClick={handleMatchClick} onClear={()=>setSelections([])} onConfirm={()=>setScreen("mise")}/>}
         {screen==="mise"    && <MiseScreen balance={balance} selectedStake={selectedStake} setSelectedStake={setSelectedStake} onClose={()=>setScreen("home")} onValidate={validateTicket}/>}
-        {screen==="success" && <SuccessScreen ticket={successTicket} onViewBets={()=>setScreen("paris")} onNewBet={()=>{setSelections({});setScreen("home");}}/>}
+        {screen==="success" && <SuccessScreen ticket={successTicket} onViewBets={()=>setScreen("paris")} onNewBet={()=>{setSelections([]);setScreen("home");}}/>}
         {screen==="paris"   && <MesParis balance={balance} tickets={tickets} filter={ticketFilter} setFilter={setTicketFilter}/>}
         {screen==="depot"   && <DepotScreen balance={balance} notif={depotNotif} onDeposit={handleDeposit}/>}
         {screen==="compte"  && <CompteScreen balance={balance} tickets={tickets}/>}
         {mainScreens.includes(screen) && <BottomNav screen={screen} onNav={go}/>}
 
-        {/* Match detail overlay */}
         {activeMatchDef && activeMatchState && (
           <MatchDetail
             match={activeMatchDef}
             matchState={activeMatchState}
-            currentSel={selections[activeMatch] || null}
+            currentSel={activeMatchSelMap}
+            usedSlots={usedByOthers}
             onBack={()=>{setScreen("home");setActiveMatch(null);}}
             onParier={handleParier}
           />
